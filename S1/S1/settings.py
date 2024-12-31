@@ -119,9 +119,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "/connect/login"
 
-AUTHLIB_OAUTH_CLIENTS = {
-    "vatger": {
-        "client_id": "8",
-        "client_secret": "zMSsZgn80YpW5yCG8VOUlPoaH3ksrXOIbPNc4zVL",
-    }
-}
