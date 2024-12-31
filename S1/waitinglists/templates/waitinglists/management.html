@@ -1,0 +1,19 @@
+{% extends "waitinglists/base.html" %}
+{% load extra_templates %}
+
+{% block title %}S1 Training{% endblock %}
+
+{% block content %}
+    <h4>Planned Sessions</h4>
+    {% for session in sessions %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><a href="{% url 'session_detail' session.id %}">{{ session.module.name }}</a></h5>
+        {{ session.datetime.date }} {{ session.datetime.hour }}:{{ session.datetime.minute }}Z | Mentor: {{ session.mentor.first_name }} {{ session.mentor.last_name }} | {{ session.language }}
+            </div></div>
+    {% endfor %}
+    <h4>Waiting Lists</h4>
+    {% for module in modules %}
+    <h6><a href="{% url 'total_waiting_list' module.id %}">{{ module.name }}</a></h6>
+    {% endfor %}
+{% endblock %}

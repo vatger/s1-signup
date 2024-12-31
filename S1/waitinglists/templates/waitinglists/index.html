@@ -1,0 +1,132 @@
+{% extends "waitinglists/base.html" %}
+{% load extra_templates %}
+
+{% block title %}S1 Training{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h4>My Progress</h4>
+        </div>
+    </div>
+    <div class="row">
+        {% if is_ger %}
+            <div class="col-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Module</th>
+                            <th>Status</th>
+                            <th>Validity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for module, vals in modules.items %}
+                        <tr>
+                            <td>{{ module }}</td>
+                            <td>
+                                {% if vals.2 %}
+                                    Completed
+                                {% else %}
+                                    {% if vals.1 %}
+                                        <a class="btn btn-outline-secondary btn-sm" href="{% url 'waiting_list' vals.0 %}">Retract</a>
+                                    {% else %}
+                                        <a class="btn btn-outline-primary btn-sm" href="{% url 'waiting_list' vals.0 %}">Sign up</a>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not vals.2 and vals.1 %}
+                                    Valid till {{ vals.3.day }}/{{ vals.3.month }}/{{ vals.3.year }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if vals.5 %}
+                                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'renew_waiting_list' vals.0 %}">Renew</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <p>❌ You are not assigned to the German subdivision.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+    <div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h4>Planned Sessions</h4>
+        </div>
+    </div>
+    <div class="row">
+        {% for session in sessions %}
+            {% if not session.id|is_in:attended_session_ids %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {{ session.module.name }}
+                            </h5>
+                            <p class="card-text">
+                                {{ session.datetime|format_datetime }}Z<br>
+                                Mentor: {{ session.mentor.first_name }} {{ session.mentor.last_name }} |
+                                {{ session.language }}
+                            </p>
+                            {% if session.open_signup %}
+                                <a class="btn btn-outline-success btn-sm" href="{% url 'open_signup' session.id %}">
+                                    Guaranteed signup - {{ free_spots|get_item:session.id }} spots remaining
+                                </a>
+                            {% else %}
+                                {% if session.id in signups %}
+                                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'signup' session.id %}">Cancel</a>
+                                {% else %}
+                                    <a class="btn btn-outline-primary btn-sm" href="{% url 'signup' session.id %}">Signup</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+
+
+    <div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h4>Confirmed Sessions</h4>
+        </div>
+    </div>
+    <div class="row">
+        {% for attendance in attendances %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ attendance.session.module.name }}</h5>
+                        <p class="card-text">
+                            {{ attendance.session.datetime|format_datetime }}Z<br>
+                            Mentor: {{ attendance.session.mentor.first_name }} {{ attendance.session.mentor.last_name }} |
+                            {{ attendance.session.language }}
+                        </p>
+                        <a class="btn btn-outline-danger btn-sm" href="{% url 'cancel_attendance' attendance.session.id %}">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+</div>
+{% endblock %}

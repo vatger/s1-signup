@@ -1,0 +1,29 @@
+{% extends "waitinglists/base.html" %}
+
+{% block title %}Session Detail{% endblock %}
+
+{% block content %}
+    <h1>{{ session.module.name }}</h1>
+    <h3>{{ session.datetime }}</h3>
+    <h3>{{ session.mentor.name }}</h3>
+    <table class="table">
+        <tr>
+            <th>VID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Status</th>
+            <th>Language</th>
+        </tr>
+        {% for attendance in attendances %}
+        <tr>
+            <td>{{ attendance.user.username }}</td>
+            <td>{{ attendance.user.first_name }}</td>
+            <td>{{ attendance.user.last_name }}</td>
+            <td>{{ attendance.attended }}</td>
+            <td>{% if attendance.user.userdetail.en_preferred %} EN {% else %} DE {% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a class="btn btn-outline-primary" href="{% url 'update_attendance' session.id %}">Update Attendance</a>
+{% endblock %}

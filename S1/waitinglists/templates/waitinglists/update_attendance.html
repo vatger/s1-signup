@@ -1,0 +1,36 @@
+{% extends "waitinglists/base.html" %}
+
+{% block title %}Update Attendance{% endblock %}
+
+{% block content %}
+    <h1>{{ session }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Participant</th>
+                    <th>First</th>
+                    <th>Last</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    <tr>
+                        <td>{{ form.instance.user.username }}</td>
+                        <td>{{ form.instance.user.first_name }}</td>
+                        <td>{{ form.instance.user.last_name }}</td>
+                        <td>{{ form.attended }}</td>
+                        <td>{{ form.id }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <button class="btn btn-outline-primary" type="submit">Save</button>
+    </form>
+
+{% endblock %}
