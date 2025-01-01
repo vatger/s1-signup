@@ -3,3 +3,4 @@
 .gitignore
 README.md
 .idea
+S1/db.sqlite3

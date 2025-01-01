@@ -9,9 +9,10 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 COPY . .
-# 8016
+
 EXPOSE 8016
 
 RUN chmod +x ./init.sh
+RUN chmod +x S1/initial_setup.sh
 
 CMD ["/bin/sh", "-c", "./init.sh"]
