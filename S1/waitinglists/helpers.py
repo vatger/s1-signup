@@ -15,7 +15,7 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str)
     }
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.post(
-        f"https://vatsim-germany.org/api/user/{id}/send_notification",
+        f"http://vatsim-germany.org/api/user/{id}/send_notification",
         data=data,
         headers=header,
     )
