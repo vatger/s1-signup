@@ -3,4 +3,4 @@
 .gitignore
 README.md
 .idea
-S1/db.sqlite3
+S1/db/db.sqlite3
