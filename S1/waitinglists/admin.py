@@ -21,9 +21,6 @@ class SessionAdmin(admin.ModelAdmin):
         return f"{obj.first_name} {obj.last_name}"
 
 
-admin.site.register(Session, SessionAdmin)
-
-
 admin.site.register(Attendance)
 admin.site.register(Module)
 admin.site.register(Session, SessionAdmin)
