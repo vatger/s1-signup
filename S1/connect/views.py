@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django.contrib.auth import logout
 from django.contrib.auth import login
 from django.contrib.auth.models import User, Group
+from django.http import HttpResponseRedirect
 from .models import UserDetail
 from dotenv import load_dotenv
 from authlib.integrations.django_client import OAuth
@@ -70,4 +71,4 @@ def callback_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("/waitinglists")
+    return HttpResponseRedirect("https://www.vatger.de")
