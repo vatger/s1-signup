@@ -9,7 +9,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title"><a href="{% url 'session_detail' session.id %}">{{ session.module.name }}</a></h5>
-        {{ session.datetime.date }} {{ session.datetime.hour }}:{{ session.datetime.minute }}Z | Mentor: {{ session.mentor.first_name }} {{ session.mentor.last_name }} | {{ session.language }}
+        {{ session.datetime|format_datetime }}Z | Mentor: {{ session.mentor.first_name }} {{ session.mentor.last_name }} | {{ session.language }}
             </div></div>
     {% endfor %}
     <h4>Waiting Lists</h4>
