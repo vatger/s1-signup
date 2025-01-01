@@ -35,7 +35,7 @@ CSRF_TRUSTED_ORIGINS = ["https://s1.vatsim-germany.org"]
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+# SECURE_SSL_REDIRECT = True
 
 # SESSION_COOKIE_NAME = "s1session"
 
