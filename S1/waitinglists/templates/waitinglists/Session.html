@@ -25,5 +25,7 @@
         {% endfor %}
     </table>
     <br>
+    {% if session.open_signup %}
     <a class="btn btn-outline-primary" href="{% url 'update_attendance' session.id %}">Update Attendance</a>
+    {% endif %}
 {% endblock %}
