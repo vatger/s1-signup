@@ -30,6 +30,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["s1.vatger.de", "s1.vatsim-germany.org"]
 
+CSRF_TRUSTED_ORIGINS = ["https://s1.vatsim-germany.org"]
+
+
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
