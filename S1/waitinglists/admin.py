@@ -6,7 +6,7 @@ from .models import Attendance, Module, Session, Signup, WaitingList
 
 
 class SessionAdmin(admin.ModelAdmin):
-    # Other configurations like list_display, search_fields, etc.
+    readonly_fields = ("attendance_done", "open_signup")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "mentor":
