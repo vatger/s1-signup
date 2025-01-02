@@ -71,4 +71,4 @@ def callback_view(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect("https://www.vatger.de")
+    return HttpResponseRedirect("https://vatger.de")
