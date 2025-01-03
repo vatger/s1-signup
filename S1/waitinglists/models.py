@@ -17,6 +17,9 @@ class WaitingList(models.Model):
     expiry_date = models.DateTimeField(null=True, blank=True)
     date_completed = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name} - {self.module}"
+
 
 class Session(models.Model):
     class Language(models.TextChoices):
@@ -34,7 +37,7 @@ class Session(models.Model):
     )
 
     def __str__(self):
-        return f"{self.module} - {self.datetime.strftime("%d/%m/%y - %H:%M")}Z"
+        return f"{self.module} - {self.datetime.strftime("%d/%m/%y - %H:%M")}Z - {self.mentor.first_name} {self.mentor.last_name}"
 
 
 class Signup(models.Model):
