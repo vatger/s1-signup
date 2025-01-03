@@ -28,6 +28,7 @@ def handle_signups(session: Session):
                 os.getenv("SITE_URL"),
             )
         session.open_signup = True
+        session.save()
 
     except Session.DoesNotExist:
         print(f"Session with ID {session.id} does not exist.")
