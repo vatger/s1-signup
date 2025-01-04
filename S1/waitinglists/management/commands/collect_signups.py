@@ -42,6 +42,7 @@ class Command(BaseCommand):
         sessions = Session.objects.filter(
             datetime__gt=timezone.now() + timezone.timedelta(days=1.5),
             datetime__lt=timezone.now() + timezone.timedelta(days=3),
+            open_signup=False,
         )
         self.stdout.write(f"Found {len(sessions)} sessions.")
         for session in sessions:
