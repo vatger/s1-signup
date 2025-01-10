@@ -89,7 +89,7 @@ def send_moodle_override_attempts(
         return False
 
 
-def enrol_and_check_overrides(vatsim_id: int):
+async def enrol_and_check_overrides(vatsim_id: int):
     # Enrols user in Module 2 and updates overrides accordingly.
     res = send_moodle_enrol_user(vatsim_id, 86)
     for id in quiz_ids:
