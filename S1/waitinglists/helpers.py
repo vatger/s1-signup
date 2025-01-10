@@ -94,4 +94,5 @@ def enrol_and_check_overrides(vatsim_id: int):
     res = send_moodle_enrol_user(vatsim_id, 86)
     for id in quiz_ids:
         attempts = send_moodle_count_attempts(vatsim_id, id)
-        send_moodle_override_attempts(vatsim_id, id, attempts)
+        if attempts > 0:
+            send_moodle_override_attempts(vatsim_id, id, attempts + 1)
