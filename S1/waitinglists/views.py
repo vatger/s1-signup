@@ -1,21 +1,20 @@
-from django.shortcuts import render, get_object_or_404, redirect
+import os
+from pathlib import Path
+
+import requests
+from cachetools import cached, TTLCache
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.urls import reverse
 from django.utils import timezone
-
-from django.forms import modelformset_factory
-from django.contrib.auth.decorators import login_required, user_passes_test
-
-from .models import Attendance, Session, WaitingList, Module, Signup
-from .forms import AttendanceForm
-from .helpers import enrol_and_check_overrides, send_moodle_find_user
-
-import requests
-from asyncio import create_task
 from dotenv import load_dotenv
-import os
-from cachetools import cached, TTLCache
+
+from .forms import AttendanceForm
+from .helpers import send_moodle_find_user
+from .models import Attendance, Session, WaitingList, Module, Signup
 
 load_dotenv()
 
@@ -47,6 +46,7 @@ def module_2_completed(user):
 
 
 def check_modules(cid):
+    # TODO: check if this is using the correct user ID
     try:
         mod3 = Module.objects.get(name="Module 3")
         mod4 = Module.objects.get(name="Module 4")
@@ -245,7 +245,12 @@ def update_attendance(request, session_id):
                         pass
                     check_modules(attendance.user.id)
                     if session.module.name == "Module 1":
-                        create_task(enrol_and_check_overrides(attendance.user.username))
+                        if not os.path.exists("opt/s1/moodle-signup"):
+                            os.makedirs("opt/s1/moodle-signup")
+                        Path(f"opt/s1/moodle-signup/{attendance.user.username}").touch(
+                            exist_ok=True
+                        )
+                        # enrol_and_check_overrides(attendance.user.username)
                 elif attendance.attended == "ABS":
                     try:
                         waiting_list_entry = WaitingList.objects.get(
