@@ -4,3 +4,5 @@
 README.md
 .idea
 S1/db/db.sqlite3
+**/migrations/*.py
+!**/migrations/__init__.py
