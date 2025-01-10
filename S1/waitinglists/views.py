@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import Attendance, Session, WaitingList, Module, Signup
 from .forms import AttendanceForm
+from .helpers import send_moodle_activity_completion
 
 import requests
 from dotenv import load_dotenv
