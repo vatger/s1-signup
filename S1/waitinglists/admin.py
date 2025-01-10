@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User, Group
 
 
-from .models import Attendance, Module, Session, Signup, WaitingList
+from .models import Attendance, Module, Session, Signup, QuizCompletion, WaitingList
 
 
 class SessionAdmin(admin.ModelAdmin):
@@ -28,4 +28,5 @@ admin.site.register(Attendance)
 admin.site.register(Module)
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Signup)
+admin.site.register(QuizCompletion)
 admin.site.register(WaitingList)
