@@ -20,4 +20,4 @@ def format_datetime(value):
     """
     if not value:
         return ""
-    return value.strftime("%d/%m/%y - %H:%M")
+    return value.strftime("%d.%m.%y - %H:%M")

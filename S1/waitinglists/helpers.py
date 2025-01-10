@@ -2,9 +2,16 @@ import requests
 import os
 from dotenv import load_dotenv
 
+from cachetools import TTLCache, cached
+
 load_dotenv()
 
-quiz_ids = [1525, 1526, 1527, 1528]
+quiz_ids = {
+    "Basics": 1526,
+    "Delivery": 1527,
+    "Ground": 1525,
+    "Tower": 1528,
+}
 
 
 def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str) -> any:
@@ -51,6 +58,7 @@ def send_moodle_enrol_user(user_id: int, course_id: int) -> bool:
         return False
 
 
+@cached(cache=TTLCache(maxsize=float("inf"), ttl=60 * 10))
 def send_moodle_find_user(user_id: int) -> bool:
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.get(
@@ -92,7 +100,7 @@ def send_moodle_override_attempts(
 def enrol_and_check_overrides(vatsim_id: int):
     # Enrols user in Module 2 and updates overrides accordingly.
     res = send_moodle_enrol_user(vatsim_id, 86)
-    for id in quiz_ids:
+    for id in quiz_ids.values():
         attempts = send_moodle_count_attempts(vatsim_id, id)
         if attempts > 0:
             send_moodle_override_attempts(vatsim_id, id, attempts + 1)

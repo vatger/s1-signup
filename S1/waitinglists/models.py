@@ -68,3 +68,20 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.session}"
+
+
+class QuizCompletion(models.Model):
+    class QuizID:
+        id = (
+            (1526, "BASICS"),
+            (1527, "DELIVERY"),
+            (1525, "GROUND"),
+            (1528, "TOWER"),
+        )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz_id = models.IntegerField(choices=QuizID.id)
+    date_completed = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.module}"
