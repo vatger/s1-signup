@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="row">
-        {% if is_ger %}
+        {% if is_ger and is_moodle_signed_up %}
             <div class="col-12">
                 <table class="table table-striped">
                     <thead>
@@ -52,9 +52,15 @@
                     </tbody>
                 </table>
             </div>
-        {% else %}
+        {% endif %}
+        {% if not is_ger %}
             <div class="col-12">
                 <p>❌ You are not assigned to the German subdivision.</p>
+            </div>
+        {% endif %}
+        {% if not is_moodle_signed_up %}
+            <div class="col-12">
+                <p>❌ You are not signed up to the Moodle platform.</p>
             </div>
         {% endif %}
     </div>

@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import Attendance, Session, WaitingList, Module, Signup
 from .forms import AttendanceForm
-from .helpers import send_moodle_activity_completion
+from .helpers import enrol_and_check_overrides, send_moodle_find_user
 
 import requests
 from dotenv import load_dotenv
@@ -80,7 +80,7 @@ def index(request):
         user.userdetail.module_2_completed or module_2_completed(user)
     )
     is_ger = user.userdetail.subdivision == "GER"
-
+    is_moodle_signed_up = send_moodle_find_user(user.username)
     waiting_for_modules = []
 
     module_list = Module.objects.all().order_by("name")
@@ -154,6 +154,7 @@ def index(request):
         "attendances": attendances,
         "attended_session_ids": attendend_session_ids,
         "is_mentor": is_mentor(request.user),
+        "is_moodle_signed_up": is_moodle_signed_up,
     }
     return HttpResponse(template.render(context, request))
 
@@ -242,6 +243,8 @@ def update_attendance(request, session_id):
                     except:
                         pass
                     check_modules(attendance.user.id)
+                    if session.module.name == "Module 1":
+                        enrol_and_check_overrides(attendance.user.username)
                 elif attendance.attended == "ABS":
                     try:
                         waiting_list_entry = WaitingList.objects.get(

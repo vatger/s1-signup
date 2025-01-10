@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+quiz_ids = [1525, 1526, 1527, 1528]
+
 
 def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str) -> any:
     data = {
@@ -22,7 +24,9 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str)
     return r.json()
 
 
-def send_moodle_activity_completion(user_id: int, course_module_id: int) -> tuple[bool, float]:
+def send_moodle_activity_completion(
+    user_id: int, course_module_id: int
+) -> tuple[bool, float]:
 
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.get(
@@ -47,6 +51,18 @@ def send_moodle_enrol_user(user_id: int, course_id: int) -> bool:
         return False
 
 
+def send_moodle_find_user(user_id: int) -> bool:
+    header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
+    r = requests.get(
+        f"http://vatsim-germany.org/api/moodle/user/{user_id}",
+        headers=header,
+    ).json()
+    try:
+        return r["id"]
+    except:
+        return False
+
+
 def send_moodle_count_attempts(user_id: int, course_module_id: int) -> int:
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.get(
@@ -58,7 +74,10 @@ def send_moodle_count_attempts(user_id: int, course_module_id: int) -> int:
     except:
         return 0
 
-def send_moodle_override_attempts(user_id: int, course_module_id: int, attempts: int) -> bool:
+
+def send_moodle_override_attempts(
+    user_id: int, course_module_id: int, attempts: int
+) -> bool:
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.get(
         f"http://vatsim-germany.org/api/moodle/quiz/{course_module_id}/user/{user_id}/override/attempts/{attempts}",
@@ -68,3 +87,11 @@ def send_moodle_override_attempts(user_id: int, course_module_id: int, attempts:
         return r
     except:
         return False
+
+
+def enrol_and_check_overrides(vatsim_id: int):
+    # Enrols user in Module 2 and updates overrides accordingly.
+    res = send_moodle_enrol_user(vatsim_id, 86)
+    for id in quiz_ids:
+        attempts = send_moodle_count_attempts(vatsim_id, id)
+        send_moodle_override_attempts(vatsim_id, id, attempts)
