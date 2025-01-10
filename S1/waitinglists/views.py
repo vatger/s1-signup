@@ -245,16 +245,11 @@ def update_attendance(request, session_id):
                         pass
                     check_modules(attendance.user.id)
                     if session.module.name == "Module 1":
-                        if not os.path.exists("opt/s1/S1/db/moodle-signup"):
-                            os.makedirs("opt/s1/S1/db/moodle-signup")
+                        if not os.path.exists("/opt/s1/S1/db/moodle-signup"):
+                            os.makedirs("/opt/s1/S1/db/moodle-signup")
                         Path(
-                            f"opt/s1/S1/db/moodle-signup/{attendance.user.username}"
+                            f"/opt/s1/S1/db/moodle-signup/{attendance.user.username}"
                         ).touch(exist_ok=True)
-                        with open(
-                            f"opt/s1/{attendance.user.username}",
-                            "w",
-                        ) as f:
-                            f.write("1")
                         # enrol_and_check_overrides(attendance.user.username)
                 elif attendance.attended == "ABS":
                     try:

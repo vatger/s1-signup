@@ -14,7 +14,6 @@ EXPOSE 80
 
 RUN chmod +x ./init.sh
 RUN chmod +x S1/initial_setup.sh
-RUN chmod -R 777 S1
 
 RUN apk add --no-cache nginx
 COPY config/default.conf /etc/nginx/http.d/default.conf
