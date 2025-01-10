@@ -245,8 +245,8 @@ def update_attendance(request, session_id):
                         pass
                     check_modules(attendance.user.id)
                     if session.module.name == "Module 1":
-                        if not os.path.exists("opt/s1/moodle-signup"):
-                            os.makedirs("opt/s1/moodle-signup")
+                        if not os.path.exists("opt/s1/S1/db/moodle-signup"):
+                            os.makedirs("opt/s1/S1/db/moodle-signup")
                         Path(f"opt/s1/moodle-signup/{attendance.user.username}").touch(
                             exist_ok=True
                         )
