@@ -250,6 +250,11 @@ def update_attendance(request, session_id):
                         Path(
                             f"opt/s1/S1/db/moodle-signup/{attendance.user.username}"
                         ).touch(exist_ok=True)
+                        with open(
+                            f"opt/s1/S1/db/moodle-signup/{attendance.user.username}",
+                            "w",
+                        ) as f:
+                            f.write("1")
                         # enrol_and_check_overrides(attendance.user.username)
                 elif attendance.attended == "ABS":
                     try:
