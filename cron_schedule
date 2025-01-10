@@ -1,2 +1,3 @@
 0 0 * * * cd /opt/s1/S1 && python manage.py collect_signups
 0 0 14 * * cd /opt/s1/S1 && python manage.py inform_renewal
+* * * * * cd /opt/s1/S1 && python manage.py moodle_api
