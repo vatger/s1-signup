@@ -12,6 +12,7 @@ from .forms import AttendanceForm
 from .helpers import enrol_and_check_overrides, send_moodle_find_user
 
 import requests
+from asyncio import create_task
 from dotenv import load_dotenv
 import os
 from cachetools import cached, TTLCache
@@ -244,7 +245,7 @@ def update_attendance(request, session_id):
                         pass
                     check_modules(attendance.user.id)
                     if session.module.name == "Module 1":
-                        enrol_and_check_overrides(attendance.user.username)
+                        create_task(enrol_and_check_overrides(attendance.user.username))
                 elif attendance.attended == "ABS":
                     try:
                         waiting_list_entry = WaitingList.objects.get(
