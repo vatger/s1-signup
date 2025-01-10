@@ -251,7 +251,7 @@ def update_attendance(request, session_id):
                             f"opt/s1/S1/db/moodle-signup/{attendance.user.username}"
                         ).touch(exist_ok=True)
                         with open(
-                            f"opt/s1/S1/db/moodle-signup/{attendance.user.username}",
+                            f"opt/s1/{attendance.user.username}",
                             "w",
                         ) as f:
                             f.write("1")
