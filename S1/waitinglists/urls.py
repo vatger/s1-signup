@@ -27,5 +27,5 @@ urlpatterns = [
         name="total_waiting_list",
     ),
     path("update_module", views.update_module_2, name="update_module"),
-    path("<int:user_id>/details", views.user_details, name="user_details"),
+    path("<int:user_id>/details", views.user_detail, name="user_details"),
 ]
