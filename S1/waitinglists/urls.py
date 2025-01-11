@@ -26,4 +26,5 @@ urlpatterns = [
         views.total_waiting_list,
         name="total_waiting_list",
     ),
+    path("update_module", views.update_module_2, name="update_module"),
 ]

@@ -85,11 +85,17 @@ def check_modules(cid):
 
 
 @login_required
+def update_module_2(request):
+    module_2_completion(request.user, fetch=True)
+    return HttpResponseRedirect(reverse("index"))
+
+
+@login_required
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
     user = request.user
-    module_2_detail, module_2_completed = module_2_completion(user, fetch=True)
+    module_2_detail, module_2_completed = module_2_completion(user, fetch=False)
     is_ger = user.userdetail.subdivision == "GER"
     is_moodle_signed_up = send_moodle_find_user(user.username)
     waiting_for_modules = []
