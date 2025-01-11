@@ -37,7 +37,8 @@ def module_2_completion(user, fetch=False):
     for name, quiz_id in quiz_ids.items():
         # Check for existing completion
         if quiz_id not in completion_dict and fetch:
-            res, time = send_moodle_activity_completion(user.username, quiz_id)
+            # res, time = send_moodle_activity_completion(user.username, quiz_id)
+            res, time = send_moodle_activity_completion(1524005, quiz_id)
             if res:
                 time = datetime.fromtimestamp(time)
                 QuizCompletion.objects.create(user=user, quiz_id=quiz_id, time=time)
