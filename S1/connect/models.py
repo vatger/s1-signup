@@ -7,6 +7,7 @@ class UserDetail(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     en_preferred = models.BooleanField(default=False)
     subdivision = models.CharField(max_length=10, blank=True, null=True)
+    flagged_for_deletion = models.BooleanField(default=False)
     rating = models.IntegerField()
 
     def __str__(self):

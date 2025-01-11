@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from waitinglists.models import Module, QuizCompletion, WaitingList
+from django.contrib.auth.models import User
 
 import os
 from dotenv import load_dotenv
@@ -31,9 +32,6 @@ class Command(BaseCommand):
                 "user__username", flat=True
             )
         )
-        print(mod_1_users)
-        print(mod_3_users)
-        print(mod_4_users)
         users = mod_1_users - mod_3_users - mod_4_users
         for user in users:
             module_1_completion_date = WaitingList.objects.get(
@@ -61,4 +59,7 @@ class Command(BaseCommand):
                         completions[-1].date_completed - completions[-2].date_completed
                     ).days > 40:
                         result.append(user)
-        print(result)
+        for user in result:
+            obj = User.objects.get(username=user)
+            obj.userdetail.flagged_for_deletion = True
+            obj.userdetail.save()
