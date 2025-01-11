@@ -50,7 +50,7 @@ def module_2_completion(user, fetch=False):
 
         # Populate the result array
         if quiz_id in completion_dict:
-            array[name] = [completion_dict[quiz_id].time, True]
+            array[name] = [completion_dict[quiz_id].date_completed, True]
         else:
             array[name] = [None, False]
 
