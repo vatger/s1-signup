@@ -1,9 +1,8 @@
 import os
+from datetime import datetime
 from pathlib import Path
-import datetime
 
 import requests
-from cachetools import cached, TTLCache
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
