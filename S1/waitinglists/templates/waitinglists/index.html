@@ -57,8 +57,8 @@
                     <div class="card-body">
                     <h5 class="card-title">Module 2</h5>
                     {% for k, v in module_2_detail.items %}
-                        {% if True %}
-                            <p Module {{ k }} completed on {{ v.0|format_datetime }} </p>
+                        {% if v.1 %}
+                            <p Module {{ k }} completed on {{ v.0 }} </p>
                         {% else %}
                             <p>Module {{ k }} not completed</p>
                         {% endif %}
