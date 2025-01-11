@@ -28,7 +28,7 @@
     <div class="col-8">
         <h4>Quiz Timeouts</h4>
         {% for user in timeout_users %}
-            <a href="{% url 'user_details' user.username %}">{{ user.first_name }} {{ user.last_name }}</a>
+            <a href="{% url 'user_detail' user.username %}">{{ user.first_name }} {{ user.last_name }}</a>
         {% endfor %}
     </div>
     </div>
