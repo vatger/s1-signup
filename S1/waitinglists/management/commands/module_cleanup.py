@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from waitinglists.models import Module, QuizCompletion, WaitingList
+from waitinglists.views import module_2_completion
 from django.contrib.auth.models import User
 
 import os
@@ -37,6 +38,9 @@ class Command(BaseCommand):
             module_1_completion_date = WaitingList.objects.get(
                 module=mod1, user__username=user
             ).date_completed
+            if timezone.now() - module_1_completion_date < timezone.timedelta(days=40):
+                continue
+            module_2_completion(User.objects.get(username=user), fetch=True)
             completions = list(
                 QuizCompletion.objects.filter(user__username=user).order_by(
                     "date_completed"
