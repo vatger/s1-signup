@@ -96,7 +96,7 @@ def index(request):
     user = request.user
     module_2_detail, module_2_completed = module_2_completion(user, fetch=False)
     is_ger = user.userdetail.subdivision == "GER"
-    is_moodle_signed_up = send_moodle_find_user(user.username)
+    is_moodle_signed_up = send_moodle_find_user(user.username) != False
     waiting_for_modules = []
 
     module_list = Module.objects.all().order_by("name")
