@@ -31,6 +31,9 @@ class Command(BaseCommand):
                 "user__username", flat=True
             )
         )
+        print(mod_1_users)
+        print(mod_3_users)
+        print(mod_4_users)
         users = mod_1_users - mod_3_users - mod_4_users
         for user in users:
             module_1_completion_date = WaitingList.objects.get(
