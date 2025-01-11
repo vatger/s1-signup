@@ -88,7 +88,7 @@ def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
     user = request.user
-    module_2_detail, module_2_completed = module_2_completion(user, fetch=False)
+    module_2_detail, module_2_completed = module_2_completion(user, fetch=True)
     is_ger = user.userdetail.subdivision == "GER"
     is_moodle_signed_up = send_moodle_find_user(user.username)
     waiting_for_modules = []
