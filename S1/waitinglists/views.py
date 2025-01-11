@@ -36,8 +36,7 @@ def module_2_completion(user, fetch=False):
     for name, quiz_id in quiz_ids.items():
         # Check for existing completion
         if quiz_id not in completion_dict and fetch:
-            # res, time = send_moodle_activity_completion(user.username, quiz_id)
-            res, time = send_moodle_activity_completion(1524005, quiz_id)
+            res, time = send_moodle_activity_completion(user.username, quiz_id)
             if res:
                 time = datetime.fromtimestamp(time)
                 QuizCompletion.objects.create(
@@ -57,16 +56,16 @@ def module_2_completion(user, fetch=False):
     return array, len(array) == len(quiz_ids)
 
 
-def check_modules(cid):
+def check_modules(user):
     # TODO: check if this is using the correct user ID
     try:
         mod3 = Module.objects.get(name="Module 3")
         mod4 = Module.objects.get(name="Module 4")
-        wait3 = WaitingList.objects.get(user_id=cid, module=mod3)
-        wait4 = WaitingList.objects.get(user_id=cid, module=mod4)
+        wait3 = WaitingList.objects.get(user=user, module=mod3)
+        wait4 = WaitingList.objects.get(user=user, module=mod4)
         if wait3.completed and wait4.completed:
             data = {
-                "user_cid": cid,
+                "user_cid": user.username,
                 "exam_id": 6,
                 "instructor_cid": os.getenv("INSTRUCTOR_CID"),
             }
@@ -75,11 +74,11 @@ def check_modules(cid):
                 "Accept": "application/json",
                 "User-Agent": "VATGER",
             }
-            requests.post(
-                "https://core.vateud.net/api/facility/training/exams/assign",
-                headers=eud_header,
-                data=data,
-            )
+            # requests.post(
+            #     "https://core.vateud.net/api/facility/training/exams/assign",
+            #     headers=eud_header,
+            #     data=data,
+            # )
     except:
         pass
 
@@ -260,7 +259,7 @@ def update_attendance(request, session_id):
                         waiting_list_entry.save()
                     except:
                         pass
-                    check_modules(attendance.user.id)
+                    check_modules(attendance.user)
                     if session.module.name == "Module 1":
                         if not os.path.exists("/opt/s1/S1/db/moodle-signup"):
                             os.makedirs("/opt/s1/S1/db/moodle-signup")
