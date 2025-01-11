@@ -43,7 +43,7 @@ def module_2_completion(user, fetch=False):
                 QuizCompletion.objects.create(user=user, quiz_id=quiz_id, time=time)
                 # Update completion_dict to include the new completion
                 completion_dict[quiz_id] = QuizCompletion(
-                    user=user, quiz_id=quiz_id, time=time
+                    user=user, quiz_id=quiz_id, date_completed=time
                 )
 
         # Populate the result array
