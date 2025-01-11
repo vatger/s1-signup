@@ -36,8 +36,10 @@ class Command(BaseCommand):
             module_1_completion_date = WaitingList.objects.get(
                 module=mod1, user__username=user
             ).date_completed
-            completions = QuizCompletion.objects.filter(user__username=user).order_by(
-                "date_completed"
+            completions = list(
+                QuizCompletion.objects.filter(user__username=user).order_by(
+                    "date_completed"
+                )
             )
             match len(completions):
                 case 0:
