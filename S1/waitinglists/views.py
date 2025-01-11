@@ -182,7 +182,8 @@ def waiting_list(request, module_id):
         waiting_list_entry = WaitingList.objects.get(
             user=request.user, module=Module.objects.get(id=module_id)
         )
-        waiting_list_entry.delete()
+        if not waiting_list_entry.completed:
+            waiting_list_entry.delete()
     except:
         expiry_date = timezone.now() + timezone.timedelta(days=63)
         expiry_date = expiry_date.replace(
