@@ -2,6 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+def get_name(self):
+    return self.first_name + " " + self.last_name
+
+
+User.add_to_class("__str__", get_name)
+
+
 # Create your models here.
 class UserDetail(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
