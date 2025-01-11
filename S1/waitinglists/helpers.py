@@ -37,7 +37,7 @@ def send_moodle_activity_completion(
 
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.get(
-        f"http://vatsim-germany.org/api/moodle/quiz/{course_module_id}/user/{user_id}/results",
+        f"http://vatsim-germany.org/api/moodle/activity/{course_module_id}/user/{user_id}/completion",
         headers=header,
     ).json()
     try:
