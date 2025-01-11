@@ -40,7 +40,9 @@ def module_2_completion(user, fetch=False):
             res, time = send_moodle_activity_completion(1524005, quiz_id)
             if res:
                 time = datetime.fromtimestamp(time)
-                QuizCompletion.objects.create(user=user, quiz_id=quiz_id, time=time)
+                QuizCompletion.objects.create(
+                    user=user, quiz_id=quiz_id, date_completed=time
+                )
                 # Update completion_dict to include the new completion
                 completion_dict[quiz_id] = QuizCompletion(
                     user=user, quiz_id=quiz_id, date_completed=time
