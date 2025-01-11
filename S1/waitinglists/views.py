@@ -54,7 +54,7 @@ def module_2_completion(user, fetch=False):
         else:
             array[name] = [None, False]
 
-    return array, len([val for val in array.values() if val[1] == True])
+    return array, len([val for val in array.values() if val[1] == True]) == 4
 
 
 def check_modules(user):
