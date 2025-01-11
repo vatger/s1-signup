@@ -55,10 +55,14 @@
             <div class="col-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Module 2</h5>
-            {% for k, v in module_2_detail.items %}
-                <p class="card-text">{{ k }}: {{ v }}</p>
-            {% endfor %}
+                    <h5 class="card-title">Module 2</h5>
+                    {% for k, v in module_2_detail.items %}
+                        {% if v.1 %}
+                            <p Module {{ k }} completed on v.0|format_date </p>
+                        {% else %}
+                            <p>Module {{ k }} not completed</p>
+                        {% endif %}
+                    {% endfor %}
                     </div>
                 </div>
         {% endif %}

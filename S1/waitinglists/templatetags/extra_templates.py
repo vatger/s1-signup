@@ -21,3 +21,13 @@ def format_datetime(value):
     if not value:
         return ""
     return value.strftime("%d.%m.%y - %H:%M")
+
+
+@register.filter
+def format_date(value):
+    """
+    Custom filter to format a date object as DD/MM/YY.
+    """
+    if not value:
+        return ""
+    return value.strftime("%d.%m.%y")
