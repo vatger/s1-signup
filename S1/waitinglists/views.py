@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
 from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
@@ -355,6 +356,33 @@ def management(request):
         "timeout_users": timeout_users,
     }
     template = loader.get_template("waitinglists/management.html")
+    return HttpResponse(template.render(context, request))
+
+
+@user_passes_test(is_mentor)
+def user_detail(request, user_id):
+    user = User.objects.get(username=user_id)
+    mod2_quizzes, _ = module_2_completion(user, fetch=True)
+    module_list = Module.objects.all().order_by("name")
+    modules_completed = []
+    for module in module_list:
+        try:
+            entry = WaitingList.objects.get(user=user, module=module)
+            if entry.completed:
+                modules_completed.append(True)
+            else:
+                modules_completed.append(False)
+        except:
+            modules_completed.append(False)
+    context = {
+        "user": user,
+        "prefer_en": request.user.userdetail.en_preferred,
+        "authenticated": request.user.is_authenticated,
+        "is_mentor": is_mentor(request.user),
+        "module_2_detail": mod2_quizzes,
+        "modules_completed": modules_completed,
+    }
+    template = loader.get_template("waitinglists/user_detail.html")
     return HttpResponse(template.render(context, request))
 
 
