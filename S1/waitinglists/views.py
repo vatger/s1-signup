@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from .forms import AttendanceForm
 from .helpers import send_moodle_find_user, send_moodle_activity_completion, quiz_ids
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
+from connect.models import UserDetail
 
 load_dotenv()
 
@@ -343,12 +344,15 @@ def cancel_attendance(request, session_id):
 def management(request):
     sessions = Session.objects.filter(attendance_done=False).order_by("datetime")
     modules = Module.objects.all().order_by("name")
+    timeout_details = UserDetail.objects.filter(flagged_for_deletion=True)
+    timeout_users = [detail.user for detail in timeout_details]
     context = {
         "sessions": sessions,
         "prefer_en": request.user.userdetail.en_preferred,
         "authenticated": request.user.is_authenticated,
         "is_mentor": is_mentor(request.user),
         "modules": modules,
+        "timeout_users": timeout_users,
     }
     template = loader.get_template("waitinglists/management.html")
     return HttpResponse(template.render(context, request))
