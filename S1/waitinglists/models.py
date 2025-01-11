@@ -84,4 +84,4 @@ class QuizCompletion(models.Model):
     date_completed = models.DateTimeField()
 
     def __str__(self):
-        return f"{self.user.username} - {self.module}"
+        return f"{self.user.username} - {self.quiz_id.__str__()}"
