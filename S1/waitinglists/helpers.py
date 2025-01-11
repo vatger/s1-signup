@@ -31,6 +31,7 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str)
     return r.json()
 
 
+@cached(cache=TTLCache(maxsize=float("inf"), ttl=60 * 10))
 def send_moodle_activity_completion(
     user_id: int, course_module_id: int
 ) -> tuple[bool, float]:

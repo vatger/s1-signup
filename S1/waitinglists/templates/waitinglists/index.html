@@ -12,7 +12,7 @@
     </div>
     <div class="row">
         {% if is_ger and is_moodle_signed_up %}
-            <div class="col-12">
+            <div class="col-8">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -52,6 +52,15 @@
                     </tbody>
                 </table>
             </div>
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Module 2</h5>
+            {% for k, v in module_2_detail.items %}
+                <p class="card-text">{{ k }}: {{ v }}</p>
+            {% endfor %}
+                    </div>
+                </div>
         {% endif %}
         {% if not is_ger %}
             <div class="col-12">

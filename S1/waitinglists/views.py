@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import datetime
 
 import requests
 from cachetools import cached, TTLCache
@@ -13,36 +14,45 @@ from django.utils import timezone
 from dotenv import load_dotenv
 
 from .forms import AttendanceForm
-from .helpers import send_moodle_find_user
-from .models import Attendance, Session, WaitingList, Module, Signup
+from .helpers import send_moodle_find_user, send_moodle_activity_completion, quiz_ids
+from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 
 load_dotenv()
-
-
-def check_course_completion(quiz_id: int, cid: int) -> bool:
-    headers = {"Authorization": os.getenv("MOODLE_AUTH")}
-    request = requests.get(
-        f"{os.getenv('MOODLE_LINK')}/module_completed?module_id={quiz_id}&user_id={cid}",
-        headers=headers,
-    ).json()
-    if request:
-        completion_state = request[0]["completionstate"]
-        if completion_state == 2:
-            return True
-    return False
 
 
 def is_mentor(user):
     return user.groups.filter(name="Mentor").exists()
 
 
-@cached(cache=TTLCache(maxsize=float("inf"), ttl=60 * 10))
-def module_2_completed(user):
-    basic = check_course_completion(1526, user.username)
-    delivery = check_course_completion(1527, user.username)
-    ground = check_course_completion(1525, user.username)
-    tower = check_course_completion(1528, user.username)
-    return basic and delivery and ground and tower
+def module_2_completion(user, fetch=False):
+    # Prepare a dictionary for storing results
+    array = {}
+
+    # Fetch all existing completions for the user
+    completions = QuizCompletion.objects.filter(
+        user=user, quiz_id__in=quiz_ids.values()
+    )
+    completion_dict = {comp.quiz_id: comp for comp in completions}
+
+    for name, quiz_id in quiz_ids.items():
+        # Check for existing completion
+        if quiz_id not in completion_dict and fetch:
+            res, time = send_moodle_activity_completion(user.username, quiz_id)
+            if res:
+                time = datetime.fromtimestamp(time)
+                QuizCompletion.objects.create(user=user, quiz_id=quiz_id, time=time)
+                # Update completion_dict to include the new completion
+                completion_dict[quiz_id] = QuizCompletion(
+                    user=user, quiz_id=quiz_id, time=time
+                )
+
+        # Populate the result array
+        if quiz_id in completion_dict:
+            array[name] = [completion_dict[quiz_id].time, True]
+        else:
+            array[name] = [None, False]
+
+    return array, len(array) == len(quiz_ids)
 
 
 def check_modules(cid):
@@ -77,15 +87,13 @@ def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
     user = request.user
-    user.userdetail.module_2_completed = (
-        user.userdetail.module_2_completed or module_2_completed(user)
-    )
+    module_2_detail, module_2_completed = module_2_completion(user, fetch=False)
     is_ger = user.userdetail.subdivision == "GER"
     is_moodle_signed_up = send_moodle_find_user(user.username)
     waiting_for_modules = []
 
     module_list = Module.objects.all().order_by("name")
-    if not user.userdetail.module_2_completed:
+    if not module_2_completed:
         module_list = module_list[:1]
 
     modules = {}
@@ -156,6 +164,7 @@ def index(request):
         "attended_session_ids": attendend_session_ids,
         "is_mentor": is_mentor(request.user),
         "is_moodle_signed_up": is_moodle_signed_up,
+        "module_2_detail": module_2_detail,
     }
     return HttpResponse(template.render(context, request))
 
