@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-import requests
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
@@ -53,11 +52,10 @@ def module_2_completion(user, fetch=False):
         else:
             array[name] = [None, False]
 
-    return array, len(array) == len(quiz_ids)
+    return array, len([val for val in array.values() if val[1] == True])
 
 
 def check_modules(user):
-    # TODO: check if this is using the correct user ID
     try:
         mod3 = Module.objects.get(name="Module 3")
         mod4 = Module.objects.get(name="Module 4")

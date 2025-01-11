@@ -1,11 +1,8 @@
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from waitinglists.models import Module, QuizCompletion, WaitingList
 from waitinglists.views import module_2_completion
-from django.contrib.auth.models import User
-
-import os
-from dotenv import load_dotenv
 
 
 class Command(BaseCommand):
