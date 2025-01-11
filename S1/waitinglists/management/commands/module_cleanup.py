@@ -22,12 +22,12 @@ class Command(BaseCommand):
             )
         )
         mod_3_users = set(
-            WaitingList.objects.filter(module=mod3, user__in=mod_1_users).values_list(
+            WaitingList.objects.filter(module=mod3, completed=True).values_list(
                 "user__username", flat=True
             )
         )
         mod_4_users = set(
-            WaitingList.objects.filter(module=mod4, user__in=mod_1_users).values_list(
+            WaitingList.objects.filter(module=mod4, completed=True).values_list(
                 "user__username", flat=True
             )
         )
