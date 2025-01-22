@@ -49,5 +49,26 @@
     </div>
 
     </div>
+    <div class="row">
+    <div class="col-6">
+        <h4>Comments</h4>
+        {% for comment in comments %}
+            <p>{{ comment.text }}</p>
+            {{ comment.get_author_display }}
+            <hr>
+        {% endfor %}
+    </div>
+    <div class="col-6">
+        <h4>Actions</h4>
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="form-group>
+                <label for="comment">Add Comment</label>
+                {{ form.comment }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    </div>
     </div>
 {% endblock %}

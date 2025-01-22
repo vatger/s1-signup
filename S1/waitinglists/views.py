@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from dotenv import load_dotenv
 
-from .forms import AttendanceForm
+from .forms import AttendanceForm, CommentForm
 from .helpers import send_moodle_find_user, send_moodle_activity_completion, quiz_ids
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 from connect.models import UserDetail
@@ -374,6 +374,17 @@ def user_detail(request, user_id):
                 modules_completed.append(False)
         except:
             modules_completed.append(False)
+    comments = user.comments.all().order_by("-date_added")
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.cleaned_data["comment"]
+            author = request.user
+            user.comments.create(comment=comment, author=author)
+            return HttpResponseRedirect(reverse("user_detail", args=[user_id]))
+        else:
+            form = CommentForm()
+
     context = {
         "user": user,
         "prefer_en": request.user.userdetail.en_preferred,
@@ -381,6 +392,8 @@ def user_detail(request, user_id):
         "is_mentor": is_mentor(request.user),
         "module_2_detail": mod2_quizzes,
         "modules_completed": modules_completed,
+        "comments": comments,
+        "form": form,
     }
     template = loader.get_template("waitinglists/user_detail.html")
     return HttpResponse(template.render(context, request))
