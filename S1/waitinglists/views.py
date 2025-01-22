@@ -381,7 +381,7 @@ def user_detail(request, user_id):
             text = form.cleaned_data["text"]
             author = request.user
             user.comments.create(text=text, author=author)
-            return HttpResponseRedirect(reverse("user_detail", args=[user_id]))
+            return HttpResponseRedirect(reverse("user_details", args=[user_id]))
     else:
         form = CommentForm()
 
