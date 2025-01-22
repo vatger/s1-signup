@@ -382,8 +382,8 @@ def user_detail(request, user_id):
             author = request.user
             user.comments.create(comment=comment, author=author)
             return HttpResponseRedirect(reverse("user_detail", args=[user_id]))
-        else:
-            form = CommentForm()
+    else:
+        form = CommentForm()
 
     context = {
         "user": user,
