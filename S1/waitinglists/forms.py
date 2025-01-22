@@ -26,3 +26,13 @@ class CommentForm(forms.ModelForm):
         widgets = {
             "text": forms.Textarea(attrs={"rows": 3}),
         }
+
+
+class UserDetailForm(forms.Form):
+    user_id = forms.CharField(
+        max_length=7,
+        label="User ID",
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Enter User ID"}
+        ),
+    )

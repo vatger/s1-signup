@@ -32,5 +32,20 @@
         {% endfor %}
     </div>
     </div>
+    <div class="row">
+    <div class="col-6">
+        <h4>Find User</h4>
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.user_id.label_tag }}
+                {{ form.user_id }}
+                {% if form.user_id.errors %}
+                    <div class="text-danger">{{ form.user_id.errors.0 }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
     </div>
 {% endblock %}

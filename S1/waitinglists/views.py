@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from dotenv import load_dotenv
 
-from .forms import AttendanceForm, CommentForm
+from .forms import AttendanceForm, CommentForm, UserDetailForm
 from .helpers import send_moodle_find_user, send_moodle_activity_completion, quiz_ids
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 from connect.models import UserDetail
@@ -347,6 +347,20 @@ def management(request):
     modules = Module.objects.all().order_by("name")
     timeout_details = UserDetail.objects.filter(flagged_for_deletion=True)
     timeout_users = [detail.user for detail in timeout_details]
+
+    if request.method == "POST":
+        form = UserDetailForm(request.POST)
+        if form.is_valid():
+            user_id = form.cleaned_data["user_id"]
+            # Check if the user exists
+            if User.objects.filter(username=user_id).exists():
+                # Redirect to the user_detail view
+                return redirect(reverse("user_detail", args=[user_id]))
+            else:
+                form.add_error("user_id", "User not found.")
+    else:
+        form = UserDetailForm()
+
     context = {
         "sessions": sessions,
         "prefer_en": request.user.userdetail.en_preferred,
@@ -354,6 +368,7 @@ def management(request):
         "is_mentor": is_mentor(request.user),
         "modules": modules,
         "timeout_users": timeout_users,
+        "form": form,
     }
     template = loader.get_template("waitinglists/management.html")
     return HttpResponse(template.render(context, request))
