@@ -355,7 +355,7 @@ def management(request):
             # Check if the user exists
             if User.objects.filter(username=user_id).exists():
                 # Redirect to the user_detail view
-                return redirect(reverse("user_detail", args=[user_id]))
+                return redirect(reverse("user_details", args=[user_id]))
             else:
                 form.add_error("user_id", "User not found.")
     else:
