@@ -378,7 +378,7 @@ def user_detail(request, user_id):
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
-            comment = form.cleaned_data["comment"]
+            comment = form.cleaned_data["text"]
             author = request.user
             user.comments.create(comment=comment, author=author)
             return HttpResponseRedirect(reverse("user_detail", args=[user_id]))
