@@ -54,7 +54,7 @@
         <h4>Comments</h4>
         {% for comment in comments %}
             <p>{{ comment.text }}</p>
-            {{ comment.get_author_display }}
+            {{ comment.author.first_name }} {{ comment.author.last_name }}
             <hr>
         {% endfor %}
     </div>
@@ -62,13 +62,12 @@
         <h4>Actions</h4>
         <form method="post" action="">
             {% csrf_token %}
-            <div class="form-group>
-                <label for="text">Add Comment</label>
+            <div class="form-group">
+                <label for="id_text">Add Comment</label>
                 {{ form.text }}
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
-
     </div>
     </div>
 {% endblock %}
