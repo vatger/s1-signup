@@ -63,7 +63,7 @@
         <form method="post" action="">
     {% csrf_token %}
     <div class="form-group">
-        <label for="id_text" class="form-label">Add Comment</label>
+        <label for="id_text" class="form-label">Add Comment</label><br>
         {{ form.text }}
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
