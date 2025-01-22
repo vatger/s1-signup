@@ -24,5 +24,5 @@ class CommentForm(forms.Form):
         model = Comment
         exclude = ["user", "date_added", "author"]
         widgets = {
-            "comment": forms.Textarea(attrs={"rows": 3}),
+            "text": forms.Textarea(attrs={"rows": 3}),
         }
