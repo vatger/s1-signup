@@ -19,7 +19,7 @@ AttendanceFormSet = modelformset_factory(
 )
 
 
-class CommentForm(forms.Form):
+class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         exclude = ["user", "date_added", "author"]

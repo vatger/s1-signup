@@ -61,12 +61,13 @@
     <div class="col-6">
         <h4>Actions</h4>
         <form method="post" action="">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_text" class="form-label">Add Comment</label>
-                {{ form.text }}
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_text" class="form-label">Add Comment</label>
+        {{ form.text }}
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
     </div>
     </div>
     </div>
