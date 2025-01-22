@@ -1,5 +1,5 @@
 from django import forms
-from .models import Attendance
+from .models import Attendance, Comment
 from django.forms import modelformset_factory
 
 
@@ -17,3 +17,12 @@ AttendanceFormSet = modelformset_factory(
     form=AttendanceForm,
     extra=0,  # No extra empty forms
 )
+
+
+class CommentForm(forms.Form):
+    class Meta:
+        model = Comment
+        exclude = ["user", "date_added", "author"]
+        widgets = {
+            "comment": forms.Textarea(attrs={"rows": 3}),
+        }
