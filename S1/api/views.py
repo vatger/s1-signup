@@ -17,7 +17,7 @@ def user_delete_view(request, id):
         auth_header = request.headers.get("Authorization")
         if auth_header == f"Token {os.getenv("GDPR_KEY")}":
             try:
-                user = User.objects.get(id=id)
+                user = User.objects.get(username=id)
                 user.delete()
                 return JsonResponse(
                     {"message": "User deleted successfully"}, status=200
@@ -38,7 +38,7 @@ def user_retrieve_view(request, id):
         auth_header = request.headers.get("Authorization")
         if auth_header == f"Token {os.getenv("GDPR_KEY")}":
             try:
-                user = User.objects.get(id=id)
+                user = User.objects.get(username=id)
                 user_data = {}
                 for field in user._meta.get_fields():
                     if hasattr(user, field.name):
