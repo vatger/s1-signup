@@ -23,6 +23,7 @@ from django.urls import path, include
 urlpatterns = [
     path("connect/", include("connect.urls")),
     path("waitinglists/", include("waitinglists.urls")),
+    path("api/", include("api.urls")),
     path("admin/", admin.site.urls),
     path("", RedirectView.as_view(url="/waitinglists/")),
 ]

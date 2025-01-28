@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "waitinglists.apps.WaitinglistsConfig",
     "connect.apps.ConnectConfig",
+    "api.apps.ApiConfig",
 ]
 
 
