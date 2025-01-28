@@ -16,7 +16,7 @@ from .models import (
 class SessionAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if request.user.groups.filter(name="Mentor").exists():
-            return ("attendance_done",)  # "open_signup")
+            return ("attendance_done", "open_signup")
         return super().get_readonly_fields(request, obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
