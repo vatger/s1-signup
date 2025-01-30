@@ -43,7 +43,7 @@ def user_retrieve_view(request, vatsim_id):
                 user = User.objects.get(username=vatsim_id)
                 user_data = {}
                 for field in user._meta.get_fields():
-                    if hasattr(user, field.name):
+                    if not field.is_relation:  # Exclude related fields
                         user_data[field.name] = getattr(user, field.name)
                 return JsonResponse(user_data, status=200)
             except User.DoesNotExist:
