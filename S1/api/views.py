@@ -9,7 +9,8 @@ import os
 load_dotenv()
 
 
-@method_decorator(csrf_exempt, name="dispatch")
+# @method_decorator(csrf_exempt, name="dispatch")
+@csrf_exempt
 def user_delete_view(request, vatsim_id):
     # Check for DELETE method
     if request.method == "DELETE":
@@ -30,7 +31,8 @@ def user_delete_view(request, vatsim_id):
         return HttpResponse(status=405)  # Method Not Allowed
 
 
-@method_decorator(csrf_exempt, name="dispatch")
+# @method_decorator(csrf_exempt, name="dispatch")
+@csrf_exempt
 def user_retrieve_view(request, vatsim_id):
     # Check for GET method
     if request.method == "GET":
