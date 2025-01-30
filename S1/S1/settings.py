@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # False
 
-ALLOWED_HOSTS = ["s1.vatger.de", "s1.vatsim-germany.org"]
+ALLOWED_HOSTS = ["s1.vatger.de", "s1.vatsim-germany.org", "docker.vatsim-germany.org"]
 
 CSRF_TRUSTED_ORIGINS = ["https://s1.vatsim-germany.org"]
 
