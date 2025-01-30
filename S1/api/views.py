@@ -2,20 +2,19 @@
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
 
-# @method_decorator(csrf_exempt, name="dispatch")
 @csrf_exempt
 def user_delete_view(request, vatsim_id):
     # Check for DELETE method
     if request.method == "DELETE":
         # Verify Authorization Token
         auth_header = request.headers.get("Authorization")
+        print(auth_header)
         if auth_header == f"Token {os.getenv('GDPR_KEY')}":
             try:
                 user = User.objects.get(username=vatsim_id)
@@ -31,7 +30,6 @@ def user_delete_view(request, vatsim_id):
         return HttpResponse(status=405)  # Method Not Allowed
 
 
-# @method_decorator(csrf_exempt, name="dispatch")
 @csrf_exempt
 def user_retrieve_view(request, vatsim_id):
     # Check for GET method
