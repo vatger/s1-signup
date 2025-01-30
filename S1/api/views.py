@@ -15,6 +15,8 @@ def user_delete_view(request, vatsim_id):
         # Verify Authorization Token
         auth_header = request.headers.get("Authorization")
         print(auth_header)
+        print(f"Token {os.getenv('GDPR_KEY')}")
+        print(auth_header == f"Token {os.getenv('GDPR_KEY')}")
         if auth_header == f"Token {os.getenv('GDPR_KEY')}":
             try:
                 user = User.objects.get(username=vatsim_id)
