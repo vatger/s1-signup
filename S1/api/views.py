@@ -10,20 +10,20 @@ load_dotenv()
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-def user_delete_view(request, id):
+def user_delete_view(request, vatsim_id):
     # Check for DELETE method
     if request.method == "DELETE":
         # Verify Authorization Token
         auth_header = request.headers.get("Authorization")
-        if auth_header == f"Token {os.getenv("GDPR_KEY")}":
+        if auth_header == f"Token {os.getenv('GDPR_KEY')}":
             try:
-                user = User.objects.get(username=id)
+                user = User.objects.get(username=vatsim_id)
                 user.delete()
                 return JsonResponse(
                     {"message": "User deleted successfully"}, status=200
                 )
             except User.DoesNotExist:
-                return JsonResponse({"error": "User not found"}, status=404)
+                return JsonResponse({"error": "User not found"}, status=200)
         else:
             return JsonResponse({"error": "Unauthorized"}, status=401)
     else:
@@ -31,21 +31,21 @@ def user_delete_view(request, id):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-def user_retrieve_view(request, id):
+def user_retrieve_view(request, vatsim_id):
     # Check for GET method
     if request.method == "GET":
         # Verify Authorization Token
         auth_header = request.headers.get("Authorization")
-        if auth_header == f"Token {os.getenv("GDPR_KEY")}":
+        if auth_header == f"Token {os.getenv('GDPR_KEY')}":
             try:
-                user = User.objects.get(username=id)
+                user = User.objects.get(username=vatsim_id)
                 user_data = {}
                 for field in user._meta.get_fields():
                     if hasattr(user, field.name):
                         user_data[field.name] = getattr(user, field.name)
                 return JsonResponse(user_data, status=200)
             except User.DoesNotExist:
-                return JsonResponse({"error": "User not found"}, status=404)
+                return JsonResponse({"error": "User not found"}, status=200)
         else:
             return JsonResponse({"error": "Unauthorized"}, status=401)
     else:
