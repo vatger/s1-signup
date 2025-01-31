@@ -273,7 +273,7 @@ def update_attendance(request, session_id):
                         waiting_list_entry = WaitingList.objects.get(
                             user=attendance.user, module=session.module
                         )
-                        waiting_list_entry.delete()
+                        # waiting_list_entry.delete()
                     except:
                         pass
             session.attendance_done = True
