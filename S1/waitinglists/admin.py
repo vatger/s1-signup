@@ -38,9 +38,6 @@ class WaitingListAdmin(admin.ModelAdmin):
         "expiry_date",
         "date_completed",
     )  # Fields in form view
-    readonly_fields = (
-        "date_added",
-    )  # Keep it read-only (Django Admin usually ignores auto_now_add fields)
 
 
 class SessionAdmin(admin.ModelAdmin):
