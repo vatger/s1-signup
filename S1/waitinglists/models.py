@@ -13,7 +13,7 @@ class Module(models.Model):
 class WaitingList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
-    date_added = models.DateTimeField(auto_now_add=True, editable=True)
+    date_added = models.DateTimeField(default=now, editable=True)
     completed = models.BooleanField(default=False)
     expiry_date = models.DateTimeField(null=True, blank=True)
     date_completed = models.DateTimeField(null=True, blank=True)
