@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         module1 = Module.objects.get(name="Module 1")
         i = 0
-        with open("ids.csv") as f:
+        with open("/opt/s1/S1/db/ids.csv") as f:
             for line in f.readlines():
                 id = int(line.strip("\n;,"))
                 print(id)
