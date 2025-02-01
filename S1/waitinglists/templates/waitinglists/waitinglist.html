@@ -5,12 +5,14 @@
 
 {% block content %}
     <table class="table">
+        <th>#</th>
         <th>VID</th>
         <th>First Name</th>
         <th>Last Name</th>
         <th>Preferred Language</th>
         {% for entry in waiting_list_entries %}
             <tr>
+                <td>{{ forloop.counter }}</td>
                 <td>{{ entry.user.username }}</td>
                 <td>{{ entry.user.first_name }}</td>
                 <td>{{ entry.user.last_name }}</td>
