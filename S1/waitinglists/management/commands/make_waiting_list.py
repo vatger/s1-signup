@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = "Initial creation of waiting list from csv"
 
     def handle(self, *args, **kwargs):
-        module1 = Module.objects.get(name="Module 1")
+        module1 = Module.objects.get(name="Module 3")
         i = 0
         with open("/opt/s1/S1/db/ids.txt") as f:
             for line in f.readlines():
