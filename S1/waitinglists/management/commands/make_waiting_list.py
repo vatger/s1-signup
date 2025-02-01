@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from management.models import WaitingList, Module
+from waitinglists.models import WaitingList, Module
 from django.contrib.auth.models import User
 from django.utils import timezone
 from time import sleep
