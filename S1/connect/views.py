@@ -42,31 +42,34 @@ def login_view(request):
 
 
 def callback_view(request):
-    vatger = oauth.create_client("vatger")
-    token = vatger.authorize_access_token(request)
-    resp = vatger.get("userinfo", token=token)
-    resp.raise_for_status()
-    profile = resp.json()
-    print(profile)
-    user, created = User.objects.get_or_create(
-        username=profile["id"],
-        defaults={
-            "first_name": profile["firstname"],
-            "last_name": profile["lastname"],
-            "is_staff": "S1 Mentor" in profile["teams"]
-            or "ATD Leitung" in profile["teams"],
-        },
-    )
-    if "S1 Mentor" in profile["teams"] or "ATD Leitung" in profile["teams"]:
-        mentor_group = Group.objects.get(name="Mentor")
-        user.groups.add(mentor_group)
+    try:
+        vatger = oauth.create_client("vatger")
+        token = vatger.authorize_access_token(request)
+        resp = vatger.get("userinfo", token=token)
+        resp.raise_for_status()
+        profile = resp.json()
+        print(profile)
+        user, created = User.objects.get_or_create(
+            username=profile["id"],
+            defaults={
+                "first_name": profile["firstname"],
+                "last_name": profile["lastname"],
+                "is_staff": "S1 Mentor" in profile["teams"]
+                or "ATD Leitung" in profile["teams"],
+            },
+        )
+        if "S1 Mentor" in profile["teams"] or "ATD Leitung" in profile["teams"]:
+            mentor_group = Group.objects.get(name="Mentor")
+            user.groups.add(mentor_group)
 
-    UserDetail.objects.update_or_create(
-        user=user, subdivision=profile["subdivision_code"], rating=profile["rating_atc"]
-    )
-
-    login(request, user)
-    return redirect("/waitinglists")
+        UserDetail.objects.update_or_create(
+            user=user, subdivision=profile["subdivision_code"], rating=profile["rating_atc"]
+        )
+        login(request, user)
+        return redirect("/waitinglists")
+    except Exception as e:
+        print(e)
+        return redirect("/?error=callback")
 
 
 def logout_view(request):
