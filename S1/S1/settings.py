@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True  # False
 
 ALLOWED_HOSTS = ["s1.vatger.de", "s1.vatsim-germany.org", "docker.vatsim-germany.org"]
 
