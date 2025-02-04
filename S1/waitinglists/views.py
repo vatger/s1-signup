@@ -2,6 +2,8 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+import requests
+from connect.models import UserDetail
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.forms import modelformset_factory
@@ -15,7 +17,6 @@ from dotenv import load_dotenv
 from .forms import AttendanceForm, CommentForm, UserDetailForm
 from .helpers import send_moodle_find_user, send_moodle_activity_completion, quiz_ids
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
-from connect.models import UserDetail
 
 load_dotenv()
 
@@ -74,11 +75,11 @@ def check_modules(user):
                 "Accept": "application/json",
                 "User-Agent": "VATGER",
             }
-            # requests.post(
-            #     "https://core.vateud.net/api/facility/training/exams/assign",
-            #     headers=eud_header,
-            #     data=data,
-            # )
+            requests.post(
+                "https://core.vateud.net/api/facility/training/exams/assign",
+                headers=eud_header,
+                data=data,
+            )
     except:
         pass
 
@@ -267,7 +268,6 @@ def update_attendance(request, session_id):
                         Path(
                             f"/opt/s1/S1/db/moodle-signup/{attendance.user.username}"
                         ).touch(exist_ok=True)
-                        # enrol_and_check_overrides(attendance.user.username)
                 elif attendance.attended == "ABS":
                     try:
                         waiting_list_entry = WaitingList.objects.get(
