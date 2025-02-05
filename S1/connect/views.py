@@ -5,8 +5,6 @@ from django.contrib.auth import logout
 from django.contrib.auth import login
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect
-
-from waitinglists.views import user_detail
 from .models import UserDetail
 from dotenv import load_dotenv
 from authlib.integrations.django_client import OAuth
