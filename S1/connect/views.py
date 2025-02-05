@@ -5,6 +5,8 @@ from django.contrib.auth import logout
 from django.contrib.auth import login
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect
+
+from waitinglists.views import user_detail
 from .models import UserDetail
 from dotenv import load_dotenv
 from authlib.integrations.django_client import OAuth
@@ -49,7 +51,7 @@ def callback_view(request):
         resp.raise_for_status()
         profile = resp.json()
         print(profile)
-        user, created = User.objects.get_or_create(
+        user, user_created = User.objects.get_or_create(
             username=profile["id"],
             defaults={
                 "first_name": profile["firstname"],
@@ -58,13 +60,26 @@ def callback_view(request):
                 or "ATD Leitung" in profile["teams"],
             },
         )
+        user.first_name = profile["firstname"]
+        user.last_name = profile["lastname"]
+        user.is_staff = "S1 Mentor" in profile["teams"] or "ATD Leitung" in profile["teams"]
+        user.save()
+
         if "S1 Mentor" in profile["teams"] or "ATD Leitung" in profile["teams"]:
             mentor_group = Group.objects.get(name="Mentor")
             user.groups.add(mentor_group)
 
-        UserDetail.objects.update_or_create(
-            user=user, subdivision=profile["subdivision_code"], rating=profile["rating_atc"]
+        user_detail, user_detail_created = UserDetail.objects.get_or_create(
+            user=user,
+            defaults = {
+                "rating": profile["rating_atc"],
+                "subdivision": profile["subdivision_code"]
+            }
         )
+        user_detail.rating = profile["rating_atc"]
+        user_detail.subdivision = profile["subdivision_code"]
+        user_detail.save()
+
         login(request, user)
         return redirect("/waitinglists")
     except Exception as e:
