@@ -18,9 +18,7 @@ def user_delete_view(request, vatsim_id):
             try:
                 user = User.objects.get(username=vatsim_id)
                 user.delete()
-                return JsonResponse(
-                    {"message": "User deleted successfully"}, status=200
-                )
+                return JsonResponse({"message": "User deleted successfully"}, status=200)
             except User.DoesNotExist:
                 return JsonResponse({"error": "User not found"}, status=200)
         else:
