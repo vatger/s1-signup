@@ -347,6 +347,11 @@ def management(request):
     modules = Module.objects.all().order_by("name")
     timeout_details = UserDetail.objects.filter(flagged_for_deletion=True)
     timeout_users = [detail.user for detail in timeout_details]
+    list_len = {}
+    for module in modules:
+        list_len[module] = WaitingList.objects.filter(
+            module=module, completed=False
+        ).count()
 
     if request.method == "POST":
         form = UserDetailForm(request.POST)
@@ -366,7 +371,7 @@ def management(request):
         "prefer_en": request.user.userdetail.en_preferred,
         "authenticated": request.user.is_authenticated,
         "is_mentor": is_mentor(request.user),
-        "modules": modules,
+        "modules": list_len,
         "timeout_users": timeout_users,
         "form": form,
     }

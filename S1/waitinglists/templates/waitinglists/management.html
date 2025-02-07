@@ -21,8 +21,8 @@
     <div class="row">
      <div class="col-4">
     <h4>Waiting Lists</h4>
-    {% for module in modules %}
-    <h6><a href="{% url 'total_waiting_list' module.id %}">{{ module.name }}</a></h6>
+    {% for module, n in modules.items %}
+    <h6><a href="{% url 'total_waiting_list' module.id %}">{{ module.name }} ({{ n }} waiting)</a></h6>
     {% endfor %}
      </div>
     <div class="col-8">
