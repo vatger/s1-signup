@@ -15,7 +15,12 @@ from django.utils import timezone
 from dotenv import load_dotenv
 
 from .forms import AttendanceForm, CommentForm, UserDetailForm
-from .helpers import send_moodle_find_user, send_moodle_activity_completion, quiz_ids
+from .helpers import (
+    send_moodle_find_user,
+    send_moodle_activity_completion,
+    quiz_ids,
+    send_forum_msg,
+)
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 
 load_dotenv()
@@ -326,9 +331,19 @@ def renew_waiting_list(request, module_id):
 def open_signup(request, session_id):
     session = Session.objects.get(id=session_id)
     total_attendance = Attendance.objects.filter(session=session).count()
-    if total_attendance < session.capacity:
+    if total_attendance < session.capacity and session.open_signup:
         attendance = Attendance.objects.update_or_create(
             user=request.user, session=session
+        )
+        send_forum_msg(
+            signup.user.username,
+            "Confirmed Signup",
+            f"""Your signup for the session {session} has been confirmed.
+                        The session will be held on the VATGER Teakspeak. 
+                        Please check beforehand if you can access the server.
+                        More information can be found in the knowledge base.""",
+            "S1 Centre",
+            os.getenv("SITE_URL"),
         )
     return HttpResponseRedirect(reverse("index"))
 

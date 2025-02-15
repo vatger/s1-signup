@@ -23,7 +23,10 @@ def handle_signups(session: Session):
             send_forum_msg(
                 signup.user.username,
                 "Confirmed Signup",
-                f"Your signup for the session {session} has been confirmed.",
+                f"""Your signup for the session {session} has been confirmed.
+                The session will be held on the VATGER Teakspeak. 
+                Please check beforehand if you can access the server.
+                More information can be found in the knowledge base.""",
                 "S1 Centre",
                 os.getenv("SITE_URL"),
             )
