@@ -232,12 +232,14 @@ def signup(request, session_id):
 def session_detail(request, session_id):
     session = Session.objects.get(id=session_id)
     attendances = Attendance.objects.filter(session=session)
+    session_over = session.datetime < timezone.now()
     context = {
         "session": session,
         "attendances": attendances,
         "prefer_en": request.user.userdetail.en_preferred,
         "is_mentor": is_mentor(request.user),
         "authenticated": request.user.is_authenticated,
+        "session_over": session_over,
     }
     return render(request, "waitinglists/Session.html", context)
 
