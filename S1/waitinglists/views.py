@@ -336,7 +336,7 @@ def open_signup(request, session_id):
             user=request.user, session=session
         )
         send_forum_msg(
-            signup.user.username,
+            request.user.username,
             "Confirmed Signup",
             f"""Your signup for the session {session} has been confirmed.
                         The session will be held on the VATGER Teakspeak. 
