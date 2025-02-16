@@ -1,0 +1,25 @@
+{% extends "waitinglists/base.html" %}
+
+{% block title %}Past Sessions{% endblock %}
+
+{% block content %}
+
+<h4>Past Sessions</h4>
+<table class="table">
+    <tr>
+        <th>Module</th>
+        <th>Date</th>
+        <th>Mentor</th>
+        <th>Attendees</th>
+    </tr>
+    {% for session in sessions %}
+    <tr>
+        <td>{{ session.module.name }}</td>
+        <td>{{ session.datetime }}</td>
+        <td>{{ session.mentor.name }}</td>
+        <td><a href="{% url 'session_detail' session.id %}">View Attendees</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

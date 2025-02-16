@@ -449,3 +449,16 @@ def total_waiting_list(request, module_id):
     }
     template = loader.get_template("waitinglists/waitinglist.html")
     return HttpResponse(template.render(context, request))
+
+
+@user_passes_test(is_mentor)
+def show_past_sessions(request):
+    sessions = Session.objects.filter(attendance_done=True).order_by("datetime")
+    context = {
+        "sessions": sessions,
+        "prefer_en": request.user.userdetail.en_preferred,
+        "is_mentor": is_mentor(request.user),
+        "authenticated": request.user.is_authenticated,
+    }
+    template = loader.get_template("waitinglists/past_sessions.html")
+    return HttpResponse(template.render(context, request))
