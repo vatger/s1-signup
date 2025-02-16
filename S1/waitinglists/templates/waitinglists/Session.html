@@ -16,7 +16,7 @@
         </tr>
         {% for attendance in attendances %}
         <tr>
-            <td>{{ attendance.user.username }}</td>
+            <td><a href={% url 'user_details' attendance.user.username %}> {{ attendance.user.username }}</a></td>
             <td>{{ attendance.user.first_name }}</td>
             <td>{{ attendance.user.last_name }}</td>
             <td>{{ attendance.attended }}</td>
