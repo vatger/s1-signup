@@ -15,8 +15,8 @@
     {% for session in sessions %}
     <tr>
         <td>{{ session.module.name }}</td>
-        <td>{{ session.datetime }}</td>
-        <td>{{ session.mentor.name }}</td>
+        <td>{{ session.datetime|format_datetime }}</td>
+        <td>{{ session.mentor.first_name }} {{ session.mentor.last_name }}</td>
         <td><a href="{% url 'session_detail' session.id %}">View Attendees</a></td>
     </tr>
     {% endfor %}
