@@ -452,7 +452,7 @@ def total_waiting_list(request, module_id):
 
 
 @user_passes_test(is_mentor)
-def show_past_sessions(request):
+def past_sessions(request):
     sessions = Session.objects.filter(attendance_done=True).order_by("datetime")
     context = {
         "sessions": sessions,
