@@ -16,6 +16,7 @@
         {{ session.datetime|format_datetime }}Z | Mentor: {{ session.mentor.first_name }} {{ session.mentor.last_name }} | {{ session.language }}
             </div></div>
     {% endfor %}
+    <a href="{% url 'past_sessions' %}"></a>
     </div>
     </div>
     <div class="row">
