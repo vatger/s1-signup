@@ -20,10 +20,18 @@ from .helpers import (
     send_moodle_activity_completion,
     quiz_ids,
     send_forum_msg,
+    can_upgrade,
+    upgrade_and_add_to_roster,
 )
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 
 load_dotenv()
+
+eud_header = {
+    "X-API-KEY": os.getenv("CORE_API_KEY"),
+    "Accept": "application/json",
+    "User-Agent": "VATGER",
+}
 
 
 def is_mentor(user):
@@ -74,11 +82,6 @@ def check_modules(user):
                 "user_cid": user.username,
                 "exam_id": 6,
                 "instructor_cid": os.getenv("INSTRUCTOR_CID"),
-            }
-            eud_header = {
-                "X-API-KEY": os.getenv("CORE_API_KEY"),
-                "Accept": "application/json",
-                "User-Agent": "VATGER",
             }
             requests.post(
                 "https://core.vateud.net/api/facility/training/exams/assign",
@@ -178,6 +181,8 @@ def index(request):
         "is_mentor": is_mentor(request.user),
         "is_moodle_signed_up": is_moodle_signed_up,
         "module_2_detail": module_2_detail,
+        "can_upgrade": can_upgrade(int(user.username)),
+        "has_upgraded": user.userdetail.upgraded,
     }
     return HttpResponse(template.render(context, request))
 
@@ -462,3 +467,17 @@ def past_sessions(request):
     }
     template = loader.get_template("waitinglists/past_sessions.html")
     return HttpResponse(template.render(context, request))
+
+
+@login_required
+def upgrade(request):
+    user = request.user
+    if not can_upgrade(int(user.username)):
+        return HttpResponseRedirect(reverse("index"))
+
+    succ = upgrade_and_add_to_roster(int(user.username))
+    if not succ:
+        return HttpResponseRedirect(reverse("index"))
+    user.userdetail.upgraded = True
+    user.userdetail.save()
+    return HttpResponseRedirect(reverse("index"))

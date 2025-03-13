@@ -1,8 +1,10 @@
-import requests
 import os
+
+import requests
+from cachetools import TTLCache, cached
 from dotenv import load_dotenv
 
-from cachetools import TTLCache, cached
+from .views import eud_header
 
 load_dotenv()
 
@@ -105,3 +107,53 @@ def enrol_and_check_overrides(vatsim_id: int):
         attempts = send_moodle_count_attempts(vatsim_id, id)
         if attempts > 0:
             send_moodle_override_attempts(vatsim_id, id, attempts + 1)
+
+
+cache = TTLCache(maxsize=float("inf"), ttl=60 * 10)
+
+
+def check_vatsim_api_for_upgrade(vatsim_id: int) -> bool:
+    if vatsim_id in cache:
+        return cache[vatsim_id]
+
+    try:
+        r = requests.get(f"https://api.vatsim.net/v2/members/{vatsim_id}/").json()
+        result = r["rating"] == 1 and r["subdivision_id"] == "GER"
+        cache[vatsim_id] = result  # Only cache successful results
+        return result
+    except:
+        return False
+
+
+def can_upgrade(vatsim_id: int) -> bool:
+    try:
+        res = requests.get(
+            f"https://core.vateud.net/api/facility/user/{vatsim_id}/exams",
+            headers=eud_header,
+        ).json()["data"]["results"]
+        filtered = [
+            test
+            for test in res
+            if test["exam_id"] == 6
+            and test["passed"]  # Magic number 6 is VATEUD Core S1 Theory Test id
+        ]
+    except:
+        filtered = []
+    return check_vatsim_api_for_upgrade(vatsim_id) and bool(filtered)
+
+
+def upgrade_and_add_to_roster(vatsim_id: int) -> bool:
+    if not can_upgrade(vatsim_id):
+        return False
+    try:
+        upgrade = requests.post(
+            f"https://core.vateud.net/api/facility/user/{vatsim_id}/upgrade",
+            headers=eud_header,
+        ).json()["success"]
+        roster = requests.post(
+            f"https://core.vateud.net/api/facility/roster/{vatsim_id}",
+            headers=eud_header,
+        ).json()["success"]
+        return upgrade and roster
+    except:
+        return False

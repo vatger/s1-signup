@@ -8,6 +8,12 @@
     <div class="row">
         <div class="col-12">
             <h4>My Progress</h4>
+            {% if can_upgrade and not has_upgraded %}
+                <a class="btn btn-outline-primary btn-sm" href="{% url 'upgrade' %}">Request Rating</a>
+            {% endif %}
+            {% if has_upgraded %}
+            <p>S1 Rating requested.</p>
+            {% endif %}
         </div>
     </div>
     <div class="row">
