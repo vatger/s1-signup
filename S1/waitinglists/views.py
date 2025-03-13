@@ -22,16 +22,11 @@ from .helpers import (
     send_forum_msg,
     can_upgrade,
     upgrade_and_add_to_roster,
+    eud_header,
 )
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 
 load_dotenv()
-
-eud_header = {
-    "X-API-KEY": os.getenv("CORE_API_KEY"),
-    "Accept": "application/json",
-    "User-Agent": "VATGER",
-}
 
 
 def is_mentor(user):

@@ -4,7 +4,6 @@ import requests
 from cachetools import TTLCache, cached
 from dotenv import load_dotenv
 
-from .views import eud_header
 
 load_dotenv()
 
@@ -13,6 +12,13 @@ quiz_ids = {
     "Delivery": 1527,
     "Ground": 1525,
     "Tower": 1528,
+}
+
+
+eud_header = {
+    "X-API-KEY": os.getenv("CORE_API_KEY"),
+    "Accept": "application/json",
+    "User-Agent": "VATGER",
 }
 
 
