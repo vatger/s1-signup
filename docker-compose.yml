@@ -18,3 +18,5 @@ services:
       - INSTRUCTOR_CID
       - CORE_API_KEY
       - VATGER_API_KEY
+      - GDPR_KEY
+      - SITE_URL
