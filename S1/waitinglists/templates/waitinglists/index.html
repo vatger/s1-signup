@@ -18,47 +18,49 @@
     </div>
     <div class="row">
         {% if is_ger and is_moodle_signed_up %}
-            <div class="col-8">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Module</th>
-                            <th>Status</th>
-                            <th>Validity</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for module, vals in modules.items %}
-                        <tr>
-                            <td>{{ module }}</td>
-                            <td>
-                                {% if vals.2 %}
-                                    Completed
-                                {% else %}
-                                    {% if vals.1 %}
-                                        <a class="btn btn-outline-secondary btn-sm" href="{% url 'waiting_list' vals.0 %}">Retract</a>
+            <div class="col-12 col-md-8">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Status</th>
+                                <th>Validity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for module, vals in modules.items %}
+                            <tr>
+                                <td>{{ module }}</td>
+                                <td>
+                                    {% if vals.2 %}
+                                        Completed
                                     {% else %}
-                                        <a class="btn btn-outline-primary btn-sm" href=" {% url 'waiting_list' vals.0 %}">Sign up</a>
+                                        {% if vals.1 %}
+                                            <a class="btn btn-outline-secondary btn-sm" href="{% url 'waiting_list' vals.0 %}">Retract</a>
+                                        {% else %}
+                                            <a class="btn btn-outline-primary btn-sm" href=" {% url 'waiting_list' vals.0 %}">Sign up</a>
+                                        {% endif %}
                                     {% endif %}
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if not vals.2 and vals.1 %}
-                                    Valid till {{ vals.3.day }}/{{ vals.3.month }}/{{ vals.3.year }}
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if vals.5 %}
-                                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'renew_waiting_list' vals.0 %}">Renew</a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                </td>
+                                <td>
+                                    {% if not vals.2 and vals.1 %}
+                                        Valid till {{ vals.3.day }}/{{ vals.3.month }}/{{ vals.3.year }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if vals.5 %}
+                                        <a class="btn btn-outline-secondary btn-sm" href="{% url 'renew_waiting_list' vals.0 %}">Renew</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="col-4">
+            <div class="col-12 col-md-4">
                 <div class="card">
                     <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
