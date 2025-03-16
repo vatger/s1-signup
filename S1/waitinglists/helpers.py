@@ -3,6 +3,7 @@ import os
 import requests
 from cachetools import TTLCache, cached
 from dotenv import load_dotenv
+from datetime import datetime, timezone
 
 
 load_dotenv()
@@ -142,6 +143,10 @@ def can_upgrade(vatsim_id: int) -> bool:
             for test in res
             if test["exam_id"] == 6
             and test["passed"]  # Magic number 6 is VATEUD Core S1 Theory Test id
+            and datetime.strptime(test["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(
+                tzinfo=timezone.utc
+            )
+            > datetime.now(timezone.utc)
         ]
     except:
         filtered = []
