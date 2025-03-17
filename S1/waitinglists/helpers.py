@@ -160,6 +160,7 @@ def upgrade_and_add_to_roster(vatsim_id: int) -> bool:
         upgrade = requests.post(
             f"https://core.vateud.net/api/facility/user/{vatsim_id}/upgrade",
             headers=eud_header,
+            data={"new_rating": 2, "instructor_cid": os.getenv("INSTRUCTOR_CID")},
         ).json()["success"]
         roster = requests.post(
             f"https://core.vateud.net/api/facility/roster/{vatsim_id}",
