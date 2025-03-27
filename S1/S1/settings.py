@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import ast
 
 load_dotenv()
 
@@ -28,9 +29,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["s1.vatger.de", "s1.vatsim-germany.org", "docker.vatsim-germany.org"]
-
-CSRF_TRUSTED_ORIGINS = ["https://s1.vatsim-germany.org"]
+ALLOWED_HOSTS = ast.literal_eval(os.getenv("ALLOWED_HOSTS"))
+CSRF_TRUSTED_ORIGINS = ast.literal_eval(os.getenv("CSRF_TRUSTED_ORIGINS"))
 
 
 CSRF_COOKIE_SECURE = True
