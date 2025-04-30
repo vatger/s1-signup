@@ -341,7 +341,7 @@ def open_signup(request, session_id):
             request.user.username,
             "Confirmed Signup",
             f"""Your signup for the session {session} has been confirmed.
-                        The session will be held on the VATGER Teakspeak. 
+                        The session will be held on the VATGER Teamspeak. 
                         Please check beforehand if you can access the server.
                         More information can be found in the knowledge base.""",
             "S1 Centre",
