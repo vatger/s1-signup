@@ -18,7 +18,7 @@ platformdirs==4.3.6
 pycparser==2.22
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
-requests==2.32.3
+requests==2.32.4
 six==1.17.0
 sqlparse==0.5.3
 urllib3==2.3.0
