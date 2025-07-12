@@ -30,6 +30,7 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str)
         "source_name": "VATGER ATD",
         "link_text": link_text,
         "link_url": link_url,
+        "via": "board.ping",
     }
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.post(
