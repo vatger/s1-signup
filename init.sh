@@ -2,7 +2,7 @@
 set -e
 
 # Collect static files
-cd /opt/training/training
+cd /opt/S1 Signup/S1
 python manage.py collectstatic --noinput
 
 nginx -g "daemon on;"
