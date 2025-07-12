@@ -1,3 +1,10 @@
+#!/bin/sh
+set -e
+
+# Collect static files
+cd /opt/training/training
+python manage.py collectstatic --noinput
+
 nginx -g "daemon on;"
 
 crontab cron_schedule && crond
