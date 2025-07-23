@@ -48,7 +48,6 @@ def callback_view(request):
         resp = vatger.get("userinfo", token=token)
         resp.raise_for_status()
         profile = resp.json()
-        print(profile)
         user, user_created = User.objects.get_or_create(
             username=profile["id"],
             defaults={
