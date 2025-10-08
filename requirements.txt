@@ -1,5 +1,5 @@
 asgiref==3.8.1
-Authlib==1.4.0
+Authlib==1.6.4
 black==24.10.0
 cachetools==5.5.0
 certifi==2024.12.14
