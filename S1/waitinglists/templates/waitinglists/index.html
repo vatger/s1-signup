@@ -115,9 +115,16 @@
                                 {{ session.language }}
                             </p>
                             {% if session.open_signup %}
+                                {% if free_spots|get_item:session.id > 0 %}
                                 <a class="btn btn-outline-success btn-sm" href="{% url 'open_signup' session.id %}">
                                     Guaranteed signup - {{ free_spots|get_item:session.id }} spots remaining
                                 </a>
+                                {% endif %}
+                                {% if free_spots|get_item:session.id < 1 %}
+                                <a class="btn btn-outline-danger btn-sm" href="">
+                                    No spots remaining
+                                </a>
+                                {% endif %}
                             {% else %}
                                 {% if session.id in signups %}
                                     <a class="btn btn-outline-secondary btn-sm" href="{% url 'signup' session.id %}">Cancel</a>
