@@ -16,6 +16,8 @@ def get_roster(request):
             entries_data = []
             for entry in entries:
                 entries_data.append(entry.cid)
-        return JsonResponse({"entries": entries_data})
+            return JsonResponse({"entries": entries_data})
+        else:
+            return JsonResponse({"error": "Unauthorized"})
     else:
         return HttpResponse(status=405)
