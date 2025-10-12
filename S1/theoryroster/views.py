@@ -1,7 +1,10 @@
+import os
 from dotenv import load_dotenv
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import RosterEntry
+
+load_dotenv()
 
 @csrf_exempt
 def get_roster(request):
