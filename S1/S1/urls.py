@@ -24,6 +24,7 @@ urlpatterns = [
     path("connect/", include("connect.urls")),
     path("waitinglists/", include("waitinglists.urls")),
     path("api/", include("api.urls")),
+    path("roster/", include("theoryroster.urls")),
     path("admin/", admin.site.urls),
     path("", RedirectView.as_view(url="/waitinglists/")),
 ]

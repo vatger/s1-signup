@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "waitinglists.apps.WaitinglistsConfig",
     "connect.apps.ConnectConfig",
     "api.apps.ApiConfig",
+    "theoryrosters.apps.TheoryRostersConfig",
 ]
 
 
