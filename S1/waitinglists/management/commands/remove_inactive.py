@@ -12,4 +12,4 @@ class Command(BaseCommand):
             completed=False, expiry_date__lt=timezone.now()
         )
         for inactive in inactives:
-            print(inactive.first_name + " " + inactive.last_name)
+            print(inactive.user.first_name + " " + inactive.user.last_name)
