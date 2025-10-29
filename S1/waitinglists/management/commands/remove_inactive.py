@@ -16,10 +16,10 @@ class Command(BaseCommand):
             completed=False, expiry_date__lt=timezone.now()
         )
         for inactive in inactives:
-            pass # inactive.delete()
-        log_admin_action(
-            User.objects.get(username=1000),
-            inactive,
-            DELETION,
-            f"Deleted {inactive.user.username}, {inactive.module.name}, {inactive.date_added}, {inactive.expiry_date}",
-        )
+            log_admin_action(
+                User.objects.get(username=1000),
+                inactive,
+                DELETION,
+                f"Deleted {inactive.user.username}, {inactive.module.name}, {inactive.date_added}, {inactive.expiry_date}",
+            )
+            inactive.delete()
