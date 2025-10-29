@@ -18,7 +18,7 @@ class Command(BaseCommand):
         for inactive in inactives:
             pass # inactive.delete()
         log_admin_action(
-            User.objects.get(id=1000),
+            User.objects.get(username=1000),
             inactive,
             DELETION,
             f"Deleted {inactive.user.username}, {inactive.module.name}, {inactive.date_added}, {inactive.expiry_date}",
