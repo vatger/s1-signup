@@ -2,3 +2,4 @@
 0 0 14 * * cd /opt/s1/S1 && python manage.py inform_renewal
 * * * * * cd /opt/s1/S1 && python manage.py moodle_api
 0 0 * * 0 cd /opt/s1/S1 && python manage.py module_cleanup
+0 0 1 * * cd /opt/s1/S1 && python manage.py remove_inactive
