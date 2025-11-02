@@ -5,6 +5,8 @@ from cachetools import TTLCache, cached
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 
+from S1.theoryroster.models import RosterEntry
+
 
 load_dotenv()
 
@@ -167,6 +169,8 @@ def upgrade_and_add_to_roster(vatsim_id: int) -> bool:
             f"https://core.vateud.net/api/facility/roster/{vatsim_id}",
             headers=eud_header,
         ).json()["success"]
+        tr_entry = RosterEntry(cid=int(vatsim_id))
+        tr_entry.save()
         return upgrade and roster
     except:
         return False
