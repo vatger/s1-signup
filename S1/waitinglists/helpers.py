@@ -5,7 +5,7 @@ from cachetools import TTLCache, cached
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 
-from S1.theoryroster.models import RosterEntry
+from theoryroster.models import RosterEntry
 
 
 load_dotenv()
