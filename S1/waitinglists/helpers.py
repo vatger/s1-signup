@@ -25,7 +25,10 @@ eud_header = {
 }
 
 
-def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str) -> any:
+def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str, mail: bool = False) -> any:
+    via = "board.ping"
+    if mail:
+        via += ",mail"
     data = {
         "title": title,
         "message": msg,
@@ -34,6 +37,7 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str)
         "link_url": link_url,
         "via": "board.ping",
     }
+    
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.post(
         f"http://vatsim-germany.org/api/user/{id}/send_notification",
