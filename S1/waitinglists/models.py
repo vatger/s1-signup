@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.forms import ValidationError
 from django.utils.timezone import now
 
 
@@ -27,6 +28,11 @@ class Session(models.Model):
         ENGLISH = "EN", "English"
         GERMAN = "DE", "German"
 
+    class Airport(models.TextChoices):
+        EDDW = "EDDW", "Bremen (EDDW)"
+        EDDC = "EDDC", "Dresden (EDDC)"
+        EDDG = "EDDG", "Münster/Osnabrück (EDDG)"
+
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
     capacity = models.IntegerField()
@@ -36,6 +42,21 @@ class Session(models.Model):
     language = models.CharField(
         max_length=2, choices=Language.choices, default=Language.GERMAN
     )
+
+    airport = models.CharField(
+        max_length=4,
+        choices=Airport.choices,
+        blank=True,
+        default=""
+    )
+
+    def clean(self) -> None:
+        super().clean()
+        if self.module and self.module.name == 'Module 4':
+            if not self.airport:
+                raise ValidationError({"airport": "Airport is required for Module 4 sessions."})
+        else:
+           self.airport = ""
 
     def __str__(self):
         return f"{self.module} - {self.datetime.strftime("%d.%m.%y - %H:%M")}Z - {self.mentor.first_name} {self.mentor.last_name}"

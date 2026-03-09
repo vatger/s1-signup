@@ -11,6 +11,7 @@
         <th>Module</th>
         <th>Date</th>
         <th>Mentor</th>
+        <th>Airport</th>
         <th>Attendees</th>
     </tr>
     {% for session in sessions %}
@@ -18,6 +19,7 @@
         <td>{{ session.module.name }}</td>
         <td>{{ session.datetime|format_datetime }}Z</td>
         <td>{{ session.mentor.first_name }} {{ session.mentor.last_name }}</td>
+        <td>{% if session.module.name == "Module 4" and session.airport %}{{ session.airport }}{% endif %}</td>
         <td><a href="{% url 'session_detail' session.id %}">View Attendees</a></td>
     </tr>
     {% endfor %}

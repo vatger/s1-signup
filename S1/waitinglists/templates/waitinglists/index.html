@@ -113,6 +113,9 @@
                                 {{ session.datetime|format_datetime }}Z<br>
                                 Mentor: {{ session.mentor.first_name }} {{ session.mentor.last_name }} |
                                 {{ session.language }}
+                                {% if session.module.name == "Module 4" and session.airport %}<br>
+                                Airport: {{ session.get_airport_display }}
+                                {% endif %}
                             </p>
                             {% if session.open_signup %}
                                 {% if free_spots|get_item:session.id > 0 %}
@@ -159,6 +162,9 @@
                             {{ attendance.session.datetime|format_datetime }}Z<br>
                             Mentor: {{ attendance.session.mentor.first_name }} {{ attendance.session.mentor.last_name }} |
                             {{ attendance.session.language }}
+                            {% if attendance.session.module.name == "Module 4" and attendance.session.airport %}<br>
+                            Airport: {{ attendance.session.get_airport_display }}
+                            {% endif %}
                         </p>
                         <a class="btn btn-outline-danger btn-sm" href="{% url 'cancel_attendance' attendance.session.id %}">Cancel</a>
                     </div>
