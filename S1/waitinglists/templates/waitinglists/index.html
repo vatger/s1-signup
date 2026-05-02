@@ -38,7 +38,13 @@
                                         Completed
                                     {% else %}
                                         {% if vals.1 %}
-                                            <a class="btn btn-outline-secondary btn-sm" href="{% url 'waiting_list' vals.0 %}">Retract</a>
+                                                <a
+                                                    class="btn btn-outline-secondary btn-sm"
+                                                    href="{% url 'waiting_list' vals.0 %}"
+                                                    onclick="return confirm('Are you sure you want to retract your signup? Doing so removes you from the waiting list.');"
+                                                >
+                                                Retract
+                                                </a>
                                         {% else %}
                                             <a class="btn btn-outline-primary btn-sm" href=" {% url 'waiting_list' vals.0 %}">Sign up</a>
                                         {% endif %}
