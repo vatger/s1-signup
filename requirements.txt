@@ -1,12 +1,12 @@
 asgiref==3.8.1
-Authlib==1.6.7
+Authlib==1.6.11
 black==26.3.1
 cachetools==5.5.0
 certifi==2024.12.14
 cffi==2.0.0
 charset-normalizer==3.4.1
 click==8.1.8
-cryptography==46.0.5
+cryptography==46.0.7
 Django==5.2.12
 gunicorn==23.0.0
 h11==0.16.0
@@ -17,8 +17,8 @@ pathspec==0.12.1
 platformdirs==4.3.6
 pycparser==2.22
 python-dateutil==2.9.0.post0
-python-dotenv==1.0.1
-requests==2.32.4
+python-dotenv==1.2.2
+requests==2.33.0
 six==1.17.0
 sqlparse==0.5.4
 urllib3==2.6.3
