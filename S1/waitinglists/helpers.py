@@ -77,9 +77,15 @@ def send_moodle_find_user(user_id: int) -> bool:
     r = requests.get(
         f"http://vatsim-germany.org/api/moodle/user/{user_id}",
         headers=header,
-    ).json()
+    )
     try:
-        return r["id"]
+        result = r.json()
+    except:
+        print(f"Error decoding json with user id {user_id}")
+        print(r)
+        return False
+    try:
+        return result["id"]
     except:
         return False
 
