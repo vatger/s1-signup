@@ -1,24 +1,73 @@
 {% extends "waitinglists/base.html" %}
 {% load extra_templates %}
 
-{% block title %}Waiting List Detail{% endblock %}
+{% block title %}Waiting List Detail - S1 Training{% endblock %}
 
 {% block content %}
-    <table class="table">
-        <th>#</th>
-        <th>VID</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Preferred Language</th>
-        {% for entry in waiting_list_entries %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ entry.user.username }}</td>
-                <td>{{ entry.user.first_name }}</td>
-                <td>{{ entry.user.last_name }}</td>
-                <td>{% if entry.user.userdetail.en_preferred %} EN {% else %} DE {% endif %}</td>
-            </tr>
+<div class="space-y-6 max-w-[1200px] mx-auto">
 
-        {% endfor %}
-    </table>
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-4">
+        <div>
+            <h1 class="font-semibold text-3xl sm:text-4xl text-primary-900 dark:text-white tracking-[-0.02em] mb-2">
+                Waiting List
+            </h1>
+            <p class="text-sm text-secondary-800 dark:text-secondary-300">Overview of all users currently waiting for this module.</p>
+        </div>
+
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-accent dark:hover:text-accent transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m15 18-6-6 6-6"></path></svg>
+            Back
+        </a>
+    </div>
+
+    <!-- Table Container -->
+    <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-secondary-50 dark:bg-secondary-950 text-secondary-800 dark:text-secondary-400 font-semibold border-b border-secondary-200 dark:border-secondary-800">
+                    <tr>
+                        <th class="px-6 py-4 whitespace-nowrap w-16">#</th>
+                        <th class="px-6 py-4 whitespace-nowrap">VID</th>
+                        <th class="px-6 py-4 whitespace-nowrap">First Name</th>
+                        <th class="px-6 py-4 whitespace-nowrap">Last Name</th>
+                        <th class="px-6 py-4 whitespace-nowrap text-center">Language</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-secondary-200 dark:divide-secondary-800">
+                    {% for entry in waiting_list_entries %}
+                    <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors">
+                        <td class="px-6 py-4 font-medium text-secondary-500 dark:text-secondary-500 whitespace-nowrap">
+                            {{ forloop.counter }}
+                        </td>
+                        <td class="px-6 py-4 font-semibold text-primary-900 dark:text-white whitespace-nowrap">
+                            {{ entry.user.username }}
+                        </td>
+                        <td class="px-6 py-4 text-primary-900 dark:text-white whitespace-nowrap">
+                            {{ entry.user.first_name }}
+                        </td>
+                        <td class="px-6 py-4 text-primary-900 dark:text-white whitespace-nowrap">
+                            {{ entry.user.last_name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            {% if entry.user.userdetail.en_preferred %}
+                                <span class="inline-flex items-center justify-center h-6 w-8 rounded bg-primary-900/10 dark:bg-white/10 text-primary-900 dark:text-white text-xs font-bold">EN</span>
+                            {% else %}
+                                <span class="inline-flex items-center justify-center h-6 w-8 rounded bg-secondary-200 dark:bg-secondary-800 text-secondary-800 dark:text-secondary-300 text-xs font-bold">DE</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-secondary-800 dark:text-secondary-400">
+                            The waiting list is currently empty.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

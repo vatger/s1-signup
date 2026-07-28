@@ -1,74 +1,141 @@
 {% extends "waitinglists/base.html" %}
 {% load extra_templates %}
 
-{% block title %}S1 Training{% endblock %}
+{% block title %}User Details - S1 Training{% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-    <div class="row">
+<div class="space-y-6 max-w-[1400px] mx-auto">
 
-    <div class="col-6">
-    <h4>Modules 1/3-4</h4>
-    <table class="table table-striped">
-    <thead>
-    <tr>
-    <th>Module</th>
-        <th>Completion</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-    <td>Module 1</td>
-        <td>{{ modules_completed.0 }}</td>
-    </tr>
-    <tr>
-    <td>Module 3</td>
-        <td>{{ modules_completed.1 }}</td>
-    </tr>
-    <tr>
-    <td>Module 4</td>
-        <td>{{ modules_completed.2 }}</td>
-    </tr>
-    </tbody>
-    </table>
+    <!-- Header / Navigation -->
+    <div class="flex items-center justify-between gap-4 mb-2">
+        <h1 class="font-semibold text-3xl sm:text-4xl text-primary-900 dark:text-white tracking-[-0.02em]">
+            Training Progress
+        </h1>
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-accent dark:hover:text-accent transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m15 18-6-6 6-6"></path></svg>
+            Back
+        </a>
     </div>
 
-    <div class="col-6">
-    <h4>Module 2</h4>
-        <div class="card">
-            <div class="card-body">
-            {% for k, v in module_2_detail.items %}
-                {% if v.1 %}
-                    <p> Module {{ k }} completed on {{ v.0|format_date }} </p>
-                {% else %}
-                    <p>Module {{ k }} not completed</p>
-                {% endif %}
-            {% endfor %}
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Modules 1, 3, 4 Panel -->
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200 overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-secondary-200 dark:border-secondary-800">
+                <h3 class="text-xl font-semibold text-primary-900 dark:text-white tracking-[-0.02em]">Modules 1, 3 & 4</h3>
+            </div>
+            <div class="overflow-x-auto flex-grow">
+                <table class="w-full text-left text-sm h-full">
+                    <thead class="bg-secondary-50 dark:bg-secondary-950 text-secondary-800 dark:text-secondary-400 font-semibold border-b border-secondary-200 dark:border-secondary-800">
+                        <tr>
+                            <th class="px-6 py-4 whitespace-nowrap">Module</th>
+                            <th class="px-6 py-4 whitespace-nowrap">Completion</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-secondary-200 dark:divide-secondary-800 bg-white dark:bg-secondary-900">
+                        <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors">
+                            <td class="px-6 py-4 font-medium text-primary-900 dark:text-white">Module 1</td>
+                            <td class="px-6 py-4 text-secondary-800 dark:text-secondary-300">{{ modules_completed.0 }}</td>
+                        </tr>
+                        <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors">
+                            <td class="px-6 py-4 font-medium text-primary-900 dark:text-white">Module 3</td>
+                            <td class="px-6 py-4 text-secondary-800 dark:text-secondary-300">{{ modules_completed.1 }}</td>
+                        </tr>
+                        <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors">
+                            <td class="px-6 py-4 font-medium text-primary-900 dark:text-white">Module 4</td>
+                            <td class="px-6 py-4 text-secondary-800 dark:text-secondary-300">{{ modules_completed.2 }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-    </div>
+
+        <!-- Module 2 Panel -->
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200 flex flex-col">
+            <div class="p-6 border-b border-secondary-200 dark:border-secondary-800">
+                <h3 class="text-xl font-semibold text-primary-900 dark:text-white tracking-[-0.02em]">Module 2 Detail</h3>
+            </div>
+            <div class="p-6 space-y-5">
+                {% for k, v in module_2_detail.items %}
+                <div class="flex items-start gap-3">
+                    {% if v.1 %}
+                    <div class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success-100 text-success-700 dark:bg-success-900/50 dark:text-success-400">
+                        <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-primary-900 dark:text-white">Module {{ k }}</p>
+                        <p class="text-xs text-secondary-800 dark:text-secondary-400 mt-0.5">Completed on {{ v.0|format_date }}</p>
+                    </div>
+                    {% else %}
+                    <div class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-secondary-200 text-secondary-600 dark:bg-secondary-800 dark:text-secondary-400">
+                        <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-primary-900 dark:text-white">Module {{ k }}</p>
+                        <p class="text-xs text-secondary-500 dark:text-secondary-500 mt-0.5">Not completed</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p class="text-sm text-secondary-500 dark:text-secondary-400">No Module 2 data available.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Comments Panel -->
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200 flex flex-col h-full">
+            <div class="p-6 border-b border-secondary-200 dark:border-secondary-800">
+                <h3 class="text-xl font-semibold text-primary-900 dark:text-white tracking-[-0.02em]">Comments</h3>
+            </div>
+            <div class="p-6 space-y-4 flex-grow">
+                {% for comment in comments %}
+                <div class="p-4 rounded-xl bg-secondary-50 dark:bg-secondary-950/50 border border-secondary-200 dark:border-secondary-800">
+                    <p class="text-secondary-800 dark:text-secondary-300 leading-relaxed mb-3">{{ comment.text }}</p>
+                    <div class="flex items-center gap-2 text-xs font-semibold text-primary-900 dark:text-secondary-400">
+                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-secondary-200 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300">
+                            {{ comment.author.first_name|first }}{{ comment.author.last_name|first }}
+                        </div>
+                        {{ comment.author.first_name }} {{ comment.author.last_name }}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <p class="text-sm text-secondary-500 dark:text-secondary-400">No comments yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Add Comment / Actions Panel -->
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200 flex flex-col h-full">
+            <div class="p-6 border-b border-secondary-200 dark:border-secondary-800">
+                <h3 class="text-xl font-semibold text-primary-900 dark:text-white tracking-[-0.02em]">Add Action</h3>
+            </div>
+            <div class="p-6">
+                <form method="post" action="" class="flex flex-col h-full">
+                    {% csrf_token %}
+                    <div class="mb-5 flex-grow">
+                        <label for="{{ form.text.id_for_label }}" class="block font-semibold text-primary-900 dark:text-white mb-2">New Comment</label>
+
+                        <!-- Wrapper styles the native Django textarea automatically -->
+                        <div class="[&_textarea]:w-full [&_textarea]:min-h-[120px] [&_textarea]:rounded-xl [&_textarea]:border [&_textarea]:border-secondary-200 dark:[&_textarea]:border-secondary-800 [&_textarea]:bg-secondary-50 dark:[&_textarea]:bg-secondary-950 [&_textarea]:px-4 [&_textarea]:py-3 [&_textarea]:text-primary-900 dark:[&_textarea]:text-white focus:[&_textarea]:outline-none focus:[&_textarea]:ring-2 focus:[&_textarea]:ring-accent focus:[&_textarea]:border-transparent [&_textarea]:transition-all [&_textarea]:resize-y">
+                            {{ form.text }}
+                        </div>
+
+                        {% if form.text.errors %}
+                            <p class="mt-2 text-sm font-medium text-danger-700 dark:text-danger-400">{{ form.text.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold text-white bg-primary-900 hover:bg-primary-800 dark:bg-secondary-800 dark:hover:bg-secondary-700 border border-transparent dark:border-secondary-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
+                        Submit Comment
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
 
     </div>
-    <div class="row">
-    <div class="col-6">
-        <h4>Comments</h4>
-        {% for comment in comments %}
-            <p>{{ comment.text }}</p>
-            {{ comment.author.first_name }} {{ comment.author.last_name }}
-            <hr>
-        {% endfor %}
-    </div>
-    <div class="col-6">
-        <h4>Actions</h4>
-        <form method="post" action="">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="id_text" class="form-label">Add Comment</label><br>
-        {{ form.text }}
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-    </div>
-    </div>
-    </div>
+</div>
 {% endblock %}

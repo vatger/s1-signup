@@ -1,64 +1,223 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}VATSIM Germany S1{% endblock %}</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Inline anti-flicker theme script -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <!-- Preload critical font weights to prevent layout shift -->
+    <link rel="preload" href="https://cdn.vatsim-germany.org/static/fonts/Vatger-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdn.vatsim-germany.org/static/fonts/Vatger-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Define the Vatger font family -->
+    <style>
+        @font-face {
+            font-family: 'Vatger';
+            src: url("https://cdn.vatsim-germany.org/static/fonts/Vatger-Regular.woff2") format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Vatger';
+            src: url("https://cdn.vatsim-germany.org/static/fonts/Vatger-Medium.woff2") format('woff2');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Vatger';
+            src: url("https://cdn.vatsim-germany.org/static/fonts/Vatger-SemiBold.woff2") format('woff2');
+            font-weight: 600;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Vatger';
+            src: url("https://cdn.vatsim-germany.org/static/fonts/Vatger-Bold.woff2") format('woff2');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+    </style>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            700: '#33485e',
+                            800: '#3a526b',
+                            900: '#2b3f55',
+                        },
+                        accent: {
+                            DEFAULT: '#ea5763',
+                        },
+                        secondary: {
+                            50: '#f8f9fa',
+                            100: '#f0f1f3',
+                            200: '#d9dde2',
+                            300: '#b0b7c0',
+                            700: '#333b47',
+                            800: '#687585',
+                            900: '#171a1f',
+                            950: '#0f1115',
+                        },
+                        success: { 50: '#ecfdf5', 200: '#a7f3d0', 700: '#047857', 800: '#065f46', 950: '#022c22' },
+                        danger: { 50: '#fef2f2', 200: '#fecaca', 700: '#b91c1c', 800: '#991b1b', 950: '#450a0a' },
+                        warning: { 50: '#fffbeb', 200: '#fde68a', 700: '#b45309', 800: '#92400e', 950: '#451a03' }
+                    },
+                    fontFamily: {
+                        sans: ['"Vatger"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     {% block extra_styles %}{% endblock %}
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">S1</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'index' %}">Home <span class="sr-only">(current)</span></a>
-                </li>
-                {% if is_mentor %}
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'management' %}">Management</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="https://s1.vatsim-germany.org/admin/waitinglists/session/add/">New Session</a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
 
-        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    {% if prefer_en %}
-                    <a class="nav-link" href="{% url 'change_language' %}">Preferred Language: EN (Change)</a>
-                    {% else %}
-                    <a class="nav-link" href="{% url 'change_language' %}">Preferred Language: DE (Change)</a>
+<body class="bg-secondary-50 text-primary-900 dark:bg-secondary-950 dark:text-secondary-100 min-h-screen flex flex-col font-sans selection:bg-accent selection:text-white transition-colors duration-200">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-secondary-950 border-b border-secondary-200 dark:border-secondary-800 transition-colors duration-200">
+        <div class="mx-auto max-w-[1400px] px-5 py-5 sm:px-8 lg:px-12 flex flex-wrap items-center justify-between gap-6">
+
+            <!-- Left Side: Branding & Main Nav -->
+            <div class="flex items-center gap-8">
+                <a href="{% url 'index' %}" class="flex items-center gap-3">
+                    <!-- Light Mode Logo (using static path convention) -->
+                    <img alt="VATSIM Germany" class="h-7 sm:h-8 w-auto object-contain block dark:hidden" src="/static/s1_light.svg">
+                    <!-- Dark Mode Logo -->
+                    <img alt="VATSIM Germany" class="h-7 sm:h-8 w-auto object-contain hidden dark:block" src="/static/s1_dark.svg">
+
+                    <!-- S1 Branding -->
+                    <span class="font-bold text-xl text-primary-900 dark:text-white border-l-2 border-secondary-200 dark:border-secondary-800 pl-3">
+                        S1
+                    </span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center gap-6">
+                    <a href="{% url 'index' %}" class="text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-primary-900 dark:hover:text-white transition-colors">Home</a>
+                    {% if is_mentor %}
+                    <a href="{% url 'management' %}" class="text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-primary-900 dark:hover:text-white transition-colors">Management</a>
+                    <a href="https://s1.vatsim-germany.org/admin/waitinglists/session/add/" class="text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-primary-900 dark:hover:text-white transition-colors">New Session</a>
                     {% endif %}
-                </li>
+                </nav>
+            </div>
 
-            {% if authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout <span class="sr-only">(current)</span></a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Login <span class="sr-only">(current)</span></a>
-                </li>
-                {% endif %}
-            </ul>
+            <!-- Right Side: User Links & Theme Toggle -->
+            <div class="flex items-center gap-4 ml-auto">
+                <div class="hidden sm:flex items-center gap-4 border-r border-secondary-200 dark:border-secondary-800 pr-4 mr-1">
+                    <!-- Language Toggle -->
+                    <a href="{% url 'change_language' %}" class="text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-primary-900 dark:hover:text-white transition-colors">
+                        Lang: {% if prefer_en %}EN{% else %}DE{% endif %}
+                    </a>
+
+                    <!-- Auth Toggle -->
+                    {% if authenticated %}
+                    <a href="{% url 'logout' %}" class="text-sm font-semibold text-accent hover:opacity-80 transition-opacity">Logout</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="text-sm font-semibold text-primary-900 dark:text-white hover:text-accent dark:hover:text-accent transition-colors">Login</a>
+                    {% endif %}
+                </div>
+
+                {% block header %}{% endblock %}
+
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" type="button" aria-label="Toggle theme" class="inline-flex items-center gap-2 rounded-xl border border-secondary-200 dark:border-secondary-800 bg-secondary-50 dark:bg-secondary-900 px-4 py-2 text-sm font-semibold text-primary-900 dark:text-white transition-colors hover:bg-secondary-100 dark:hover:bg-secondary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+                    <!-- Sun Icon -->
+                    <svg id="theme-toggle-sun-icon" class="hidden h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+                    </svg>
+                    <!-- Moon Icon -->
+                    <svg id="theme-toggle-moon-icon" class="hidden h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+                    </svg>
+                    <span id="theme-toggle-text" class="hidden sm:inline">Theme</span>
+                </button>
+            </div>
         </div>
-    </nav>
 
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
+        <!-- Mobile Navigation Fallback (Visible on small screens) -->
+        <div class="md:hidden border-t border-secondary-200 dark:border-secondary-800 bg-secondary-50 dark:bg-secondary-900 px-5 py-3 flex flex-wrap gap-4 sm:hidden">
+            <a href="{% url 'index' %}" class="text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-primary-900">Home</a>
+            {% if is_mentor %}
+            <a href="{% url 'management' %}" class="text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-primary-900">Management</a>
+            <a href="https://s1.vatsim-germany.org/admin/waitinglists/session/add/" class="text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-primary-900">New Session</a>
+            {% endif %}
+            <a href="{% url 'change_language' %}" class="text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-primary-900">Lang: {% if prefer_en %}EN{% else %}DE{% endif %}</a>
+            {% if authenticated %}
+            <a href="{% url 'logout' %}" class="text-sm font-semibold text-accent">Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="text-sm font-semibold text-primary-900 dark:text-white">Login</a>
+            {% endif %}
+        </div>
+    </header>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <div class="mx-auto max-w-[1400px] px-5 py-12 sm:px-8 lg:px-12">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-secondary-950 border-t border-secondary-200 dark:border-secondary-800 text-secondary-800 dark:text-secondary-400 py-10 mt-auto transition-colors duration-200">
+        <div class="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 flex justify-between items-center">
+            <div class="space-x-6 text-sm font-medium">
+                <a href="https://vatsim-germany.org/imprint" class="hover:text-primary-900 dark:hover:text-white transition-colors">Imprint</a>
+                <a href="https://vatsim-germany.org/gdpr" class="hover:text-primary-900 dark:hover:text-white transition-colors">Data protection</a>
+            </div>
+            <p class="text-sm">VATSIM Germany S1</p>
+        </div>
+    </footer>
+
+    <!-- Dark mode logic script -->
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-toggle-sun-icon');
+        const moonIcon = document.getElementById('theme-toggle-moon-icon');
+
+        function updateIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        updateIcons();
+
+        toggleBtn.addEventListener('click', function() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateIcons();
+        });
+    </script>
+
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

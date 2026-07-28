@@ -1,54 +1,127 @@
 {% extends "waitinglists/base.html" %}
 {% load extra_templates %}
 
-{% block title %}S1 Training{% endblock %}
+{% block title %}S1 Training - Management{% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-    <div class="row">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-    <div class="col-6">
-    <h4>Planned Sessions</h4>
-    {% for session in sessions %}
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><a href="{% url 'session_detail' session.id %}">{{ session.module.name }}</a></h5>
-        {{ session.datetime|format_datetime }}Z |
-        Mentor: {{ session.mentor.first_name }} {{ session.mentor.last_name }} |
-        {{ session.language }}{% if session.module.name == "Module 4" and session.airport %} | {{ session.airport }} {% endif %}
-            </div></div>
-    {% endfor %}
-    <a href="{% url 'past_sessions' %}">Past Sessions</a>
-    </div>
-    </div>
-    <div class="row">
-     <div class="col-4">
-    <h4>Waiting Lists</h4>
-    {% for module, n in modules.items %}
-    <h6><a href="{% url 'total_waiting_list' module.id %}">{{ module.name }} ({{ n }} waiting)</a></h6>
-    {% endfor %}
-     </div>
-    <div class="col-8">
-        <h4>Quiz Timeouts</h4>
-        {% for user in timeout_users %}
-            <a href="{% url 'user_details' user.username %}">{{ user.first_name }} {{ user.last_name }}</a>
-        {% endfor %}
-    </div>
-    </div>
-    <div class="row">
-    <div class="col-6">
-        <h4>Find User</h4>
-        <form method="post" action="">
-            {% csrf_token %}
-            <div class="mb-3">
-                {{ form.user_id.label_tag }}
-                {{ form.user_id }}
-                {% if form.user_id.errors %}
-                    <div class="text-danger">{{ form.user_id.errors.0 }}</div>
-                {% endif %}
+    <!-- Left Column: Main Content -->
+    <div class="lg:col-span-7 xl:col-span-8 space-y-8">
+
+        <!-- Planned Sessions Panel -->
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 p-6 sm:p-8 shadow-sm transition-colors duration-200">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-secondary-200 dark:border-secondary-800">
+                <h2 class="text-2xl font-semibold text-primary-900 dark:text-white tracking-[-0.02em]">Planned Sessions</h2>
+                <a href="{% url 'past_sessions' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-accent dark:hover:text-accent transition-colors">
+                    View Past Sessions
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </a>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+
+            <div class="space-y-4">
+                {% for session in sessions %}
+                <div class="flex items-center justify-between p-5 rounded-xl border border-secondary-200 dark:border-secondary-800 bg-secondary-50/50 dark:bg-secondary-950/30 hover:bg-secondary-100/80 dark:hover:bg-secondary-800/40 transition-colors group">
+                    <div>
+                        <a href="{% url 'session_detail' session.id %}" class="text-lg font-semibold text-primary-900 dark:text-white group-hover:text-accent transition-colors">
+                            {{ session.module.name }}
+                        </a>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-secondary-800 dark:text-secondary-400">
+                            <span class="flex items-center gap-1.5">
+                                <svg class="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                {{ session.datetime|format_datetime }}Z
+                            </span>
+                            <span class="flex items-center gap-1.5">
+                                <svg class="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                {{ session.mentor.first_name }} {{ session.mentor.last_name }}
+                            </span>
+                            <span class="flex items-center gap-1.5">
+                                <svg class="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                {{ session.language }}
+                            </span>
+                            {% if session.module.name == "Module 4" and session.airport %}
+                            <span class="flex items-center gap-1.5 font-medium text-primary-900 dark:text-secondary-300">
+                                <svg class="h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                {{ session.airport }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{% url 'session_detail' session.id %}" aria-label="View Session" class="flex shrink-0 items-center justify-center h-10 w-10 rounded-xl bg-secondary-200 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300 group-hover:bg-accent group-hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="text-center py-10 bg-secondary-50 dark:bg-secondary-950/30 rounded-xl border border-dashed border-secondary-300 dark:border-secondary-800">
+                    <p class="text-secondary-800 dark:text-secondary-400">No planned sessions available.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
+
+    <!-- Right Column: Sidebar Actions -->
+    <div class="lg:col-span-5 xl:col-span-4 space-y-6">
+
+        <!-- Find User Widget -->
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 p-6 shadow-sm transition-colors duration-200">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary-100 dark:bg-secondary-800 text-primary-900 dark:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <h3 class="text-xl font-semibold text-primary-900 dark:text-white tracking-[-0.02em]">Find User</h3>
+            </div>
+
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="mb-5">
+                    <label class="block font-semibold text-primary-900 dark:text-white mb-2" for="{{ form.user_id.id_for_label }}">{{ form.user_id.label }}</label>
+                    <!-- Wrapper styling applies standard UI design to standard django inputs -->
+                    <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border [&>input]:border-secondary-200 dark:[&>input]:border-secondary-800 [&>input]:bg-secondary-50 dark:[&>input]:bg-secondary-950 [&>input]:px-4 [&>input]:py-3 [&>input]:text-primary-900 dark:[&>input]:text-white focus:[&>input]:outline-none focus:[&>input]:ring-2 focus:[&>input]:ring-accent focus:[&>input]:border-transparent [&>input]:transition-all">
+                        {{ form.user_id }}
+                    </div>
+                    {% if form.user_id.errors %}
+                        <p class="mt-2 text-sm font-medium text-danger-700 dark:text-danger-400">{{ form.user_id.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold text-white bg-primary-900 hover:bg-primary-800 dark:bg-secondary-800 dark:hover:bg-secondary-700 border border-transparent dark:border-secondary-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+                    Search
+                </button>
+            </form>
+        </div>
+
+        <!-- Waiting Lists Widget -->
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 p-6 shadow-sm transition-colors duration-200">
+            <h3 class="text-lg font-semibold text-primary-900 dark:text-white tracking-[-0.02em] mb-4">Waiting Lists</h3>
+            <div class="space-y-2.5">
+                {% for module, n in modules.items %}
+                <a href="{% url 'total_waiting_list' module.id %}" class="flex items-center justify-between p-3.5 rounded-xl border border-secondary-200 dark:border-secondary-800 bg-secondary-50/50 dark:bg-secondary-950/30 hover:bg-secondary-100 dark:hover:bg-secondary-800/50 transition-colors group">
+                    <span class="font-medium text-sm text-primary-900 dark:text-white group-hover:text-accent transition-colors">{{ module.name }}</span>
+                    <span class="inline-flex items-center justify-center rounded-full {% if n > 0 %}bg-warning-100 text-warning-800 dark:bg-warning-900/40 dark:text-warning-400{% else %}bg-secondary-200 text-secondary-700 dark:bg-secondary-800 dark:text-secondary-400{% endif %} px-2.5 py-1 text-xs font-bold transition-colors">
+                        {{ n }} waiting
+                    </span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Quiz Timeouts Widget -->
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 p-6 shadow-sm transition-colors duration-200">
+            <h3 class="text-lg font-semibold text-primary-900 dark:text-white tracking-[-0.02em] mb-4">Quiz Timeouts</h3>
+            {% if timeout_users %}
+                <div class="flex flex-wrap gap-2">
+                    {% for user in timeout_users %}
+                        <a href="{% url 'user_details' user.username %}" class="inline-flex items-center gap-1.5 rounded-lg bg-danger-50 hover:bg-danger-100 dark:bg-danger-900/20 dark:hover:bg-danger-900/40 px-3 py-2 text-sm font-semibold text-danger-700 dark:text-danger-400 border border-danger-200 dark:border-danger-800/50 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            {{ user.first_name }} {{ user.last_name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-sm text-secondary-800 dark:text-secondary-400">No active quiz timeouts.</p>
+            {% endif %}
+        </div>
+
     </div>
+</div>
 {% endblock %}
