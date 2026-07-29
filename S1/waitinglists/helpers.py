@@ -42,6 +42,74 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str)
     )
     return r.json()
 
+def send_mail(id:int, title:str, msg:str, link_text:str, link_url:str) -> any:
+    data = {
+        "title": title,
+        "message": msg,
+        "source_name": "VATGER ATD",
+        "link_text": link_text,
+        "link_url": link_url,
+        "via": "mail",
+    }
+    header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
+    r = requests.post(
+        f"http://vatsim-germany.org/api/user/{id}/send_notification",
+        data=data,
+        headers=header,
+    )
+    return r.json()
+
+def generate_signup_confirmation_msg(session: Session, Mail: bool) -> str:
+    if Mail:
+        kb_link = "<a href='https://knowledgebase.vatsim-germany.org'>knowledge base</a>"
+    else:
+        kb_link = "[URL='https://knowledgebase.vatsim-germany.org']knowledge base[/URL]"
+
+
+    msg = (
+        f"Your signup for the session {session} has been confirmed.\n"
+        "The session will be held on the VATGER Teamspeak. Please check beforehand if you can access the server.\n"
+        f"More information can be found in the {kb_link}."
+    )
+
+    if session.module.name == 'Module 4' and session.airport:
+        match session.airport:
+            case 'EDDW':
+                sop_url = "https://knowledgebase.vatsim-germany.org/books/sops-fir-bremen/chapter/eddw-bremen-airport"
+                pack_url = "https://files.aero-nav.com/EDWW"
+                pack_name = "EDWW Full-Package"
+            case 'EDDC':
+                sop_url = "https://knowledgebase.vatsim-germany.org/books/sops-fir-munchen/chapter/eddc-dresden-airport"
+                pack_url = "https://files.aero-nav.com/EDMM"
+                pack_name = "EDMM Full-Package"
+            case 'EDDG':
+                sop_url = "https://knowledgebase.vatsim-germany.org/books/sops-fir-langen/chapter/eddg-munsterosnabruck-airport"
+                pack_url = "https://files.aero-nav.com/EDGG"
+                pack_name = "EDGG Full_Package"
+            case _:
+                sop_url = ""
+                pack_url = "https://files.aero-nav.com/EDXX"
+                pack_name = "appropriate Package"
+
+        if Mail:
+            msg += (
+                "\n\n"
+                f"As part of the training, a simulation of air traffic control in "
+                f"<a href='{sop_url}'>{session.get_airport_display()}</a> is carried out in Eurscope."
+                f" This requires the <a href='{pack_url}'>{pack_name}</a> to be set up."
+                f" Instructions on how to install Euroscope can be found in the <a href='https://knowledgebase.vatsim-germany.org/books/atc-software'>knowledge base</a>."
+            )
+        else:
+            msg += (
+                "\n\n"
+                f"As part of the training, a simulation of air traffic control in "
+                f"[URL='{sop_url}']{session.get_airport_display()}[/URL] is carried out in Eurscope."
+                f" This requires the [URL='{pack_url}']{pack_name}[/URL] to be set up."
+                f" Instructions on how to install Euroscope can be found in the [URL='https://knowledgebase.vatsim-germany.org/books/atc-software']knowledge base[/URL]."
+            )
+
+    return msg
+
 
 @cached(cache=TTLCache(maxsize=float("inf"), ttl=60 * 10))
 def send_moodle_activity_completion(
