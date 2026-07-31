@@ -1,31 +1,96 @@
 {% extends "waitinglists/base.html" %}
 
-{% block title %}Session Detail{% endblock %}
+{% block title %}Session Detail - S1 Training{% endblock %}
 
 {% block content %}
-    <h1>{{ session.module.name }}</h1>
-    <h3>{{ session.datetime }}</h3>
-    <h3>{{ session.mentor.name }}</h3>
-    <table class="table">
-        <tr>
-            <th>VID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Status</th>
-            <th>Language</th>
-        </tr>
-        {% for attendance in attendances %}
-        <tr>
-            <td><a href={% url 'user_details' attendance.user.username %}> {{ attendance.user.username }}</a></td>
-            <td>{{ attendance.user.first_name }}</td>
-            <td>{{ attendance.user.last_name }}</td>
-            <td>{{ attendance.attended }}</td>
-            <td>{% if attendance.user.userdetail.en_preferred %} EN {% else %} DE {% endif %}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
+<div class="space-y-6 max-w-[1200px] mx-auto">
+
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+        <div>
+            <h1 class="font-semibold text-3xl sm:text-4xl text-primary-900 dark:text-white tracking-[-0.02em] mb-4">
+                {{ session.module.name }}
+            </h1>
+
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-secondary-800 dark:text-secondary-300">
+                <div class="flex items-center gap-2 font-medium">
+                    <svg class="h-5 w-5 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    {{ session.datetime }}
+                </div>
+                <div class="flex items-center gap-2 font-medium">
+                    <svg class="h-5 w-5 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    {{ session.mentor.name }}
+                </div>
+            </div>
+        </div>
+
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-accent dark:hover:text-accent transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m15 18-6-6 6-6"></path></svg>
+            Back
+        </a>
+    </div>
+
+    <!-- Attendees Table -->
+    <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-secondary-50 dark:bg-secondary-950 text-secondary-800 dark:text-secondary-400 font-semibold border-b border-secondary-200 dark:border-secondary-800">
+                    <tr>
+                        <th class="px-6 py-4 whitespace-nowrap">VID</th>
+                        <th class="px-6 py-4 whitespace-nowrap">First Name</th>
+                        <th class="px-6 py-4 whitespace-nowrap">Last Name</th>
+                        <th class="px-6 py-4 whitespace-nowrap">Status</th>
+                        <th class="px-6 py-4 whitespace-nowrap text-center">Language</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-secondary-200 dark:divide-secondary-800">
+                    {% for attendance in attendances %}
+                    <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors">
+                        <td class="px-6 py-4 font-semibold whitespace-nowrap">
+                            <a href="{% url 'user_details' attendance.user.username %}" class="text-accent hover:opacity-80 transition-opacity">
+                                {{ attendance.user.username }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-primary-900 dark:text-white whitespace-nowrap">
+                            {{ attendance.user.first_name }}
+                        </td>
+                        <td class="px-6 py-4 text-primary-900 dark:text-white whitespace-nowrap">
+                            {{ attendance.user.last_name }}
+                        </td>
+                        <td class="px-6 py-4 text-secondary-800 dark:text-secondary-300 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-secondary-100 dark:bg-secondary-800/50 text-secondary-800 dark:text-secondary-300 text-xs font-bold uppercase tracking-wider">
+                                {{ attendance.attended }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center whitespace-nowrap">
+                            {% if attendance.user.userdetail.en_preferred %}
+                                <span class="inline-flex items-center justify-center h-6 w-8 rounded bg-primary-900/10 dark:bg-white/10 text-primary-900 dark:text-white text-xs font-bold">EN</span>
+                            {% else %}
+                                <span class="inline-flex items-center justify-center h-6 w-8 rounded bg-secondary-200 dark:bg-secondary-800 text-secondary-800 dark:text-secondary-300 text-xs font-bold">DE</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-secondary-800 dark:text-secondary-400">
+                            No attendees registered for this session.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer Actions -->
     {% if session.open_signup and session_over %}
-    <a class="btn btn-outline-primary" href="{% url 'update_attendance' session.id %}">Finalise Attendance</a>
+    <div class="mt-8 flex justify-end">
+        <a href="{% url 'update_attendance' session.id %}" class="inline-flex items-center justify-center gap-2 rounded-xl px-8 py-3.5 font-semibold text-white bg-primary-900 hover:bg-primary-800 dark:bg-secondary-800 dark:hover:bg-secondary-700 border border-transparent dark:border-secondary-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
+            Finalise Attendance
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+    </div>
     {% endif %}
+
+</div>
 {% endblock %}

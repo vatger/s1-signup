@@ -1,36 +1,91 @@
 {% extends "waitinglists/base.html" %}
 
-{% block title %}Finalise Attendance{% endblock %}
+{% block title %}Finalise Attendance - S1 Training{% endblock %}
 
 {% block content %}
-    <h1>{{ session }}</h1>
+<div class="space-y-6 max-w-[1200px] mx-auto">
 
-    <form method="post">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-4">
+        <div>
+            <h1 class="font-semibold text-3xl sm:text-4xl text-primary-900 dark:text-white tracking-[-0.02em] mb-2">
+                {{ session }}
+            </h1>
+            <p class="text-sm text-secondary-800 dark:text-secondary-300">Update and confirm final attendance for this session.</p>
+        </div>
+
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-accent dark:hover:text-accent transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m15 18-6-6 6-6"></path></svg>
+            Back
+        </a>
+    </div>
+
+    <!-- Form & Table Container -->
+    <form method="post" class="space-y-8">
         {% csrf_token %}
         {{ formset.management_form }}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Participant</th>
-                    <th>First</th>
-                    <th>Last</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for form in formset %}
-                    <tr>
-                        <td>{{ form.instance.user.username }}</td>
-                        <td>{{ form.instance.user.first_name }}</td>
-                        <td>{{ form.instance.user.last_name }}</td>
-                        <td>{{ form.attended }}</td>
-                        <td>{{ form.id }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br>
-        <button class="btn btn-outline-primary" type="submit">Finalise Attendance (non-reversible!)</button>
+
+        <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-secondary-50 dark:bg-secondary-950 text-secondary-800 dark:text-secondary-400 font-semibold border-b border-secondary-200 dark:border-secondary-800">
+                        <tr>
+                            <th class="px-6 py-4 whitespace-nowrap">Participant</th>
+                            <th class="px-6 py-4 whitespace-nowrap">First Name</th>
+                            <th class="px-6 py-4 whitespace-nowrap">Last Name</th>
+                            <th class="px-6 py-4 whitespace-nowrap">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-secondary-200 dark:divide-secondary-800">
+                        {% for form in formset %}
+                        <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors">
+                            <td class="px-6 py-4 font-semibold text-accent whitespace-nowrap">
+                                {{ form.instance.user.username }}
+                            </td>
+                            <td class="px-6 py-4 text-primary-900 dark:text-white whitespace-nowrap">
+                                {{ form.instance.user.first_name }}
+                            </td>
+                            <td class="px-6 py-4 text-primary-900 dark:text-white whitespace-nowrap">
+                                {{ form.instance.user.last_name }}
+                            </td>
+                            <!-- The CSS trick below automatically styles the Django dropdown/checkbox field -->
+                            <td class="px-6 py-4 whitespace-nowrap [&_select]:block [&_select]:w-full [&_select]:min-w-[150px] [&_select]:rounded-lg [&_select]:border [&_select]:border-secondary-200 dark:[&_select]:border-secondary-700 [&_select]:bg-secondary-50 dark:[&_select]:bg-secondary-950 [&_select]:px-3 [&_select]:py-2 [&_select]:text-sm [&_select]:text-primary-900 dark:[&_select]:text-white focus:[&_select]:outline-none focus:[&_select]:ring-2 focus:[&_select]:ring-accent focus:[&_select]:border-transparent [&_select]:transition-all [&_input[type=checkbox]]:h-5 [&_input[type=checkbox]]:w-5 [&_input[type=checkbox]]:rounded [&_input[type=checkbox]]:text-accent focus:[&_input[type=checkbox]]:ring-accent">
+                                {{ form.attended }}
+                                {{ form.id }} <!-- Hidden ID field kept in the same cell to avoid empty table columns -->
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center text-secondary-800 dark:text-secondary-400">
+                                No participants found for this session.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Submit Button Section with Warning -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-6 bg-warning-50 dark:bg-warning-950/30 border border-warning-200 dark:border-warning-900/50 rounded-2xl p-6 transition-colors duration-200">
+            <div class="flex items-start gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-warning-200 dark:bg-warning-900/50 text-warning-700 dark:text-warning-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+                </div>
+                <div>
+                    <h3 class="mt-1.5 font-semibold text-lg text-primary-900 dark:text-white">Attention Required</h3>
+                    <p class="mt-1 text-sm text-warning-800 dark:text-warning-200/80 leading-relaxed">
+                        Please verify that all attendance statuses are correct. Once finalised, this action <strong>cannot be reversed</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <button type="submit" class="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-8 py-3.5 font-semibold text-white bg-primary-900 hover:bg-primary-800 dark:bg-secondary-800 dark:hover:bg-secondary-700 border border-transparent dark:border-secondary-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
+                Finalise Attendance
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+        </div>
     </form>
 
+</div>
 {% endblock %}

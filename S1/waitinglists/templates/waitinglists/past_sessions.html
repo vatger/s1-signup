@@ -1,28 +1,94 @@
 {% extends "waitinglists/base.html" %}
 {% load extra_templates %}
 
-{% block title %}Past Sessions{% endblock %}
+{% block title %}Past Sessions - S1 Training{% endblock %}
 
 {% block content %}
+<div class="space-y-6 max-w-[1200px] mx-auto">
 
-<h4>Past Sessions</h4>
-<table class="table">
-    <tr>
-        <th>Module</th>
-        <th>Date</th>
-        <th>Mentor</th>
-        <th>Airport</th>
-        <th>Attendees</th>
-    </tr>
-    {% for session in sessions %}
-    <tr>
-        <td>{{ session.module.name }}</td>
-        <td>{{ session.datetime|format_datetime }}Z</td>
-        <td>{{ session.mentor.first_name }} {{ session.mentor.last_name }}</td>
-        <td>{% if session.module.name == "Module 4" and session.airport %}{{ session.airport }}{% endif %}</td>
-        <td><a href="{% url 'session_detail' session.id %}">View Attendees</a></td>
-    </tr>
-    {% endfor %}
-</table>
+    <!-- Header & Navigation -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div>
+            <h1 class="font-semibold text-3xl sm:text-4xl text-primary-900 dark:text-white tracking-[-0.02em]">
+                Past Sessions
+            </h1>
+            <p class="mt-2 text-sm text-secondary-800 dark:text-secondary-300">Overview of all historical training sessions.</p>
+        </div>
+        <a href="{% url 'management' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-accent dark:hover:text-accent transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m15 18-6-6 6-6"></path></svg>
+            Back to Management
+        </a>
+    </div>
 
+    <!-- Table Container -->
+    <div class="bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-secondary-50 dark:bg-secondary-950 text-secondary-800 dark:text-secondary-400 font-semibold border-b border-secondary-200 dark:border-secondary-800">
+                    <tr>
+                        <th class="px-6 py-4 whitespace-nowrap">Module</th>
+                        <th class="px-6 py-4 whitespace-nowrap">Date & Time (UTC)</th>
+                        <th class="px-6 py-4 whitespace-nowrap">Mentor</th>
+                        <th class="px-6 py-4 whitespace-nowrap">Airport</th>
+                        <th class="px-6 py-4 whitespace-nowrap text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-secondary-200 dark:divide-secondary-800">
+                    {% for session in sessions %}
+                    <tr class="hover:bg-secondary-50/50 dark:hover:bg-secondary-800/30 transition-colors group">
+                        <!-- Module -->
+                        <td class="px-6 py-4 font-medium text-primary-900 dark:text-white whitespace-nowrap">
+                            {{ session.module.name }}
+                        </td>
+
+                        <!-- Date -->
+                        <td class="px-6 py-4 text-secondary-800 dark:text-secondary-300 whitespace-nowrap">
+                            <div class="flex items-center gap-2">
+                                <svg class="h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                {{ session.datetime|format_datetime }}Z
+                            </div>
+                        </td>
+
+                        <!-- Mentor -->
+                        <td class="px-6 py-4 text-secondary-800 dark:text-secondary-300 whitespace-nowrap">
+                            <div class="flex items-center gap-2">
+                                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-secondary-200 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300 text-xs font-bold">
+                                    {{ session.mentor.first_name|first }}{{ session.mentor.last_name|first }}
+                                </div>
+                                {{ session.mentor.first_name }} {{ session.mentor.last_name }}
+                            </div>
+                        </td>
+
+                        <!-- Airport -->
+                        <td class="px-6 py-4 text-secondary-800 dark:text-secondary-300 whitespace-nowrap">
+                            {% if session.module.name == "Module 4" and session.airport %}
+                                <span class="inline-flex items-center gap-1 font-medium">
+                                    <svg class="h-3.5 w-3.5 opacity-60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    {{ session.airport }}
+                                </span>
+                            {% else %}
+                                <span class="text-secondary-400 dark:text-secondary-600">-</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                            <a href="{% url 'session_detail' session.id %}" class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-primary-900 dark:text-white bg-secondary-100 hover:bg-secondary-200 dark:bg-secondary-800 dark:hover:bg-secondary-700 transition-colors">
+                                View Attendees
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-secondary-800 dark:text-secondary-400">
+                            No past sessions found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
