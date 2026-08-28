@@ -19,7 +19,9 @@ from .helpers import (
     send_moodle_find_user,
     send_moodle_activity_completion,
     quiz_ids,
+    generate_signup_confirmation_msg,
     send_forum_msg,
+    send_mail,
     can_upgrade,
     upgrade_and_add_to_roster,
     eud_header,
@@ -340,10 +342,14 @@ def open_signup(request, session_id):
         send_forum_msg(
             request.user.username,
             "Confirmed Signup",
-            f"""Your signup for the session {session} has been confirmed.
-                        The session will be held on the VATGER Teamspeak. 
-                        Please check beforehand if you can access the server.
-                        More information can be found in the knowledge base.""",
+            generate_signup_confirmation_msg(session, Mail=False),
+            "S1 Centre",
+            os.getenv("SITE_URL"),
+        )
+        send_mail(
+            request.user.username,
+            "Confirmed Signup",
+            generate_signup_confirmation_msg(session, Mail=True),
             "S1 Centre",
             os.getenv("SITE_URL"),
         )
