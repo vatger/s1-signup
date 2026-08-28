@@ -25,7 +25,7 @@ eud_header = {
 }
 
 
-def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str, mail: bool = True) -> any:
+def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str, mail: bool = False) -> any:
     via = "board.ping"
     if mail:
         via += ",mail"
