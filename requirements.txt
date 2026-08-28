@@ -6,7 +6,7 @@ certifi==2024.12.14
 cffi==2.0.0
 charset-normalizer==3.4.1
 click==8.1.8
-cryptography==48.0.1
+cryptography==50.0.0
 Django==5.2.15
 gunicorn==23.0.0
 h11==0.16.0
