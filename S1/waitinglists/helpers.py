@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timezone
 
 from theoryroster.models import RosterEntry
-from waitinglits.models import Session
+from models import Session
 
 
 load_dotenv()
