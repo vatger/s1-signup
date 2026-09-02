@@ -31,6 +31,35 @@ from .models import Attendance, Session, WaitingList, Module, Signup, QuizComple
 load_dotenv()
 
 
+def get_hours(vatsim_id: int) -> float:
+    activity = 0
+    api_url = (
+        lambda id: f"http://stats.vatsim-germany.org/api/atc/{id}/sessions/"
+    )
+    try:
+        response = requests.get(api_url(vatsim_id)).json()
+    except:
+        return -1
+    for connection in response:
+        activity += float(connection["minutes_online"])
+    return activity / 60
+
+
+def can_sign_up(user, module) -> bool:
+    # Check rating
+    if module.min_rating is not None and module.min_rating > 1:
+        has_rating = user.userdetail.rating >= module.min_rating
+    else:
+        has_rating = False
+
+    # Check hours
+    if module.min_rating is not None:
+        has_hours = get_hours(user.username) >= module.min_hours
+    else:
+        has_hours = False
+    return has_rating and has_hours
+
+
 def is_mentor(user):
     return user.groups.filter(name="Mentor").exists()
 
