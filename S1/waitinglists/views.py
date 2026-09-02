@@ -52,16 +52,8 @@ def can_sign_up(user, module) -> bool:
     if module.name != "Module 5":
         return True
     else:
-        if module.min_rating is not None and module.min_rating > 1:
-            has_rating = user.userdetail.rating >= module.min_rating
-        else:
-            has_rating = False
-
-        # Check hours
-        if module.min_rating is not None:
-            has_hours = get_hours(user.username) >= module.min_hours
-        else:
-            has_hours = False
+        has_rating = user.userdetail.rating > 1
+        has_hours = get_hours(user.username) >= 20
         # If Module 5, user must not be on theory roster
         try:
             RosterEntry.objects.get(cid=user.username)

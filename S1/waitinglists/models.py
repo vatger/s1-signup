@@ -6,8 +6,6 @@ from django.utils.timezone import now
 
 class Module(models.Model):
     name = models.CharField(max_length=200)
-    min_rating = models.IntegerField(null=True, blank=True)
-    min_hours = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
