@@ -28,6 +28,8 @@ from .helpers import (
 )
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 
+from theoryroster.models import RosterEntry
+
 load_dotenv()
 
 
@@ -47,17 +49,26 @@ def get_hours(vatsim_id: int) -> float:
 
 def can_sign_up(user, module) -> bool:
     # Check rating
-    if module.min_rating is not None and module.min_rating > 1:
-        has_rating = user.userdetail.rating >= module.min_rating
+    if module.name != "Module 5":
+        return True
     else:
-        has_rating = False
+        if module.min_rating is not None and module.min_rating > 1:
+            has_rating = user.userdetail.rating >= module.min_rating
+        else:
+            has_rating = False
 
-    # Check hours
-    if module.min_rating is not None:
-        has_hours = get_hours(user.username) >= module.min_hours
-    else:
-        has_hours = False
-    return has_rating and has_hours
+        # Check hours
+        if module.min_rating is not None:
+            has_hours = get_hours(user.username) >= module.min_hours
+        else:
+            has_hours = False
+        # If Module 5, user must not be on theory roster
+        try:
+            RosterEntry.objects.get(cid=user.username)
+            roster = True
+        except:
+            roster = False
+        return has_rating and has_hours and roster
 
 
 def is_mentor(user):
@@ -215,6 +226,8 @@ def index(request):
 
 @login_required
 def waiting_list(request, module_id):
+    if not can_sign_up(request.user, Module.objects.get(id=module_id)):
+        return HttpResponseRedirect(reverse("index"))
     try:
         waiting_list_entry = WaitingList.objects.get(
             user=request.user, module=Module.objects.get(id=module_id)
@@ -297,6 +310,13 @@ def update_attendance(request, session_id):
                         waiting_list_entry.completed = True
                         waiting_list_entry.date_completed = timezone.now()
                         waiting_list_entry.save()
+                        # For Module 5, if completed remove from theory roster
+                        if session.module.name == "Module 5":
+                            try:
+                                theory_roster_entry = RosterEntry.objects.get(cid=attendance.user.username)
+                                theory_roster_entry.delete()
+                            except:
+                                pass
                     except:
                         pass
                     check_modules(attendance.user)
