@@ -140,6 +140,8 @@ def index(request):
     module_list = Module.objects.all().order_by("name")
     if not module_2_completed:
         module_list = module_list[:1]
+    elif not can_upgrade(user, module_list[-1]):
+        module_list = module_list[:-1]
 
     modules = {}
     for module in module_list:
