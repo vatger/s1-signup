@@ -28,6 +28,11 @@ urlpatterns = [
     ),
     path("update_module", views.update_module_2, name="update_module"),
     path("<int:user_id>/details", views.user_detail, name="user_details"),
+    path(
+        "<int:user_id>/remove_from_roster",
+        views.remove_from_roster,
+        name="remove_from_roster",
+    ),
     path("past", views.past_sessions, name="past_sessions"),
     path("upgrade", views.upgrade, name="upgrade"),
 ]

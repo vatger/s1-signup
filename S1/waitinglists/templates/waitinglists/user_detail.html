@@ -133,6 +133,18 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </form>
+
+                {% if is_mentor and on_theory_roster %}
+                <div class="mt-6 pt-6 border-t border-secondary-200 dark:border-secondary-800">
+                    <p class="text-sm font-semibold text-primary-900 dark:text-white mb-2">Theory Roster</p>
+                    <p class="text-xs text-secondary-800 dark:text-secondary-400 mb-3">This user is currently on the Theory Roster.</p>
+                    <a href="{% url 'remove_from_roster' user.username %}"
+                       onclick="return confirm('Are you sure you want to remove this user from the Theory Roster?');"
+                       class="w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold text-danger-700 dark:text-danger-400 border border-danger-200 dark:border-danger-900 hover:bg-danger-50 dark:hover:bg-danger-900/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
+                        Remove from Theory Roster
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
 
