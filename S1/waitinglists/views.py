@@ -14,6 +14,8 @@ from django.urls import reverse
 from django.utils import timezone
 from dotenv import load_dotenv
 
+from theoryroster.models import RosterEntry
+
 from .forms import AttendanceForm, CommentForm, UserDetailForm
 from .helpers import (
     send_moodle_find_user,
@@ -418,6 +420,7 @@ def user_detail(request, user_id):
         except:
             modules_completed.append(False)
     comments = user.comments.all().order_by("-date_added")
+    on_theory_roster = RosterEntry.objects.filter(cid=int(user_id)).exists()
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -437,9 +440,16 @@ def user_detail(request, user_id):
         "modules_completed": modules_completed,
         "comments": comments,
         "form": form,
+        "on_theory_roster": on_theory_roster,
     }
     template = loader.get_template("waitinglists/user_detail.html")
     return HttpResponse(template.render(context, request))
+
+
+@user_passes_test(is_mentor)
+def remove_from_roster(request, user_id):
+    RosterEntry.objects.filter(cid=int(user_id)).delete()
+    return HttpResponseRedirect(reverse("user_details", args=[user_id]))
 
 
 @user_passes_test(is_mentor)
