@@ -38,7 +38,7 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str,
         "link_url": link_url,
         "via": "board.ping",
     }
-    
+
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
     r = requests.post(
         f"http://vatsim-germany.org/api/user/{id}/send_notification",
@@ -65,16 +65,10 @@ def send_mail(id:int, title:str, msg:str, link_text:str, link_url:str) -> any:
     return r.json()
 
 def generate_signup_confirmation_msg(session: Session, Mail: bool) -> str:
-    if Mail:
-        kb_link = "<a href='https://knowledgebase.vatsim-germany.org'>knowledge base</a>"
-    else:
-        kb_link = "[URL='https://knowledgebase.vatsim-germany.org']knowledge base[/URL]"
-
-
     msg = (
-        f"Your signup for the session {session} has been confirmed.\n"
-        "The session will be held on the VATGER Teamspeak. Please check beforehand if you can access the server.\n"
-        f"More information can be found in the {kb_link}."
+        f"Your signup for {session} has been confirmed. \n"
+        "The session will be held on the vatger TeamSpeak server. "
+        "Please ensure you can access that server before the session. "
     )
 
     if session.module.name == 'Module 4' and session.airport:
@@ -100,17 +94,15 @@ def generate_signup_confirmation_msg(session: Session, Mail: bool) -> str:
             msg += (
                 "\n\n"
                 f"As part of the training, a simulation of air traffic control in "
-                f"<a href='{sop_url}'>{session.get_airport_display()}</a> is carried out in Eurscope."
-                f" This requires the <a href='{pack_url}'>{pack_name}</a> to be set up."
-                f" Instructions on how to install Euroscope can be found in the <a href='https://knowledgebase.vatsim-germany.org/books/atc-software'>knowledge base</a>."
+                f"<a href='{sop_url}'>{session.get_airport_display()}</a> will be carried out in EuroScope. "
+                f"This requires the <a href='{pack_url}'>{pack_name}</a> to be set up. "
+                f"Instructions on how to install EuroScope and how to set up the package can be found in the <a href='https://knowledgebase.vatsim-germany.org/books/atc-software'>knowledge base</a>.\n"
+                "Make sure you complete the setup according to our guide and test your installation by connecting as an observer before the session."
             )
         else:
             msg += (
                 "\n\n"
-                f"As part of the training, a simulation of air traffic control in "
-                f"[URL='{sop_url}']{session.get_airport_display()}[/URL] is carried out in Eurscope."
-                f" This requires the [URL='{pack_url}']{pack_name}[/URL] to be set up."
-                f" Instructions on how to install Euroscope can be found in the [URL='https://knowledgebase.vatsim-germany.org/books/atc-software']knowledge base[/URL]."
+                "For more details check your email."
             )
 
     return msg
