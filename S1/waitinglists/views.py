@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-import requests
 from connect.models import UserDetail
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
@@ -25,10 +24,9 @@ from .helpers import (
     send_forum_msg,
     send_mail,
     can_upgrade,
-    upgrade_and_add_to_roster,
-    eud_header,
 )
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
+from .task_queue import enqueue
 
 load_dotenv()
 
@@ -77,15 +75,13 @@ def check_modules(user):
         wait3 = WaitingList.objects.get(user=user, module=mod3)
         wait4 = WaitingList.objects.get(user=user, module=mod4)
         if wait3.completed and wait4.completed:
-            data = {
-                "user_cid": user.username,
-                "exam_id": 6,
-                "instructor_cid": os.getenv("INSTRUCTOR_CID"),
-            }
-            requests.post(
-                "https://core.vateud.net/api/facility/training/exams/assign",
-                headers=eud_header,
-                data=data,
+            enqueue(
+                "assign_training_exam",
+                {
+                    "user_cid": user.username,
+                    "exam_id": 6,
+                    "instructor_cid": os.getenv("INSTRUCTOR_CID"),
+                },
             )
     except:
         pass
@@ -486,9 +482,5 @@ def upgrade(request):
     if not can_upgrade(int(user.username)):
         return HttpResponseRedirect(reverse("index"))
 
-    succ = upgrade_and_add_to_roster(int(user.username))
-    if not succ:
-        return HttpResponseRedirect(reverse("index"))
-    user.userdetail.upgraded = True
-    user.userdetail.save()
+    enqueue("upgrade_user", {"vatsim_id": int(user.username)})
     return HttpResponseRedirect(reverse("index"))
