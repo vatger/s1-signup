@@ -11,12 +11,15 @@
 <h1>Task queue</h1>
 <p><a class="button" href="{% url 'admin:waitinglists_test_notification' %}">Send test notification</a></p>
 <p>Queued tasks are waiting to be processed. Processed tasks are retained for auditing.</p>
+<div style="overflow-x: auto;">
 <table id="result_list">
   <thead>
     <tr>
       <th>Task</th>
       <th>Status</th>
       <th>Payload</th>
+      <th>Attempts</th>
+      <th>Next attempt</th>
       <th>Processed at</th>
       <th>Error</th>
     </tr>
@@ -26,13 +29,21 @@
     <tr>
       <td>{{ task.task }}</td>
       <td>{{ task.status }}</td>
-      <td><pre>{{ task.payload }}</pre></td>
+      <td>
+        <details>
+          <summary>View payload</summary>
+          <pre style="white-space: pre-wrap; overflow-wrap: anywhere; max-width: 500px;">{{ task.payload_json }}</pre>
+        </details>
+      </td>
+      <td>{{ task.attempts|default:"0" }}</td>
+      <td>{{ task.next_attempt_at|default:"-" }}</td>
       <td>{{ task.processed_at|default:"-" }}</td>
       <td>{{ task.error|default:"-" }}</td>
     </tr>
     {% empty %}
-    <tr><td colspan="5">No tasks found.</td></tr>
+    <tr><td colspan="7">No tasks found.</td></tr>
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}

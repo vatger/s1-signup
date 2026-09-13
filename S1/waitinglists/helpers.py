@@ -72,6 +72,21 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str,
 def send_mail(id: int, title: str, msg: str, link_text: str, link_url: str) -> None:
     _queue_notification(id, title, msg, link_text, link_url, "mail")
 
+
+def assign_training_exam_request(user_cid: int, exam_id: int, instructor_cid: str) -> bool:
+    r = requests.post(
+        "https://core.vateud.net/api/facility/training/exams/assign",
+        headers=eud_header,
+        data={
+            "user_cid": user_cid,
+            "exam_id": exam_id,
+            "instructor_cid": instructor_cid,
+        },
+        timeout=NOTIFICATION_TIMEOUT,
+    )
+    r.raise_for_status()
+    return r.json().get("success", True)
+
 def generate_signup_confirmation_msg(session: Session, Mail: bool) -> str:
     msg = (
         f"Your signup for {session} has been confirmed. \n"
@@ -243,10 +258,12 @@ def upgrade_and_add_to_roster(vatsim_id: int) -> bool:
             f"https://core.vateud.net/api/facility/user/{vatsim_id}/upgrade",
             headers=eud_header,
             data={"new_rating": 2, "instructor_cid": os.getenv("INSTRUCTOR_CID")},
+            timeout=NOTIFICATION_TIMEOUT,
         ).json()["success"]
         roster = requests.post(
             f"https://core.vateud.net/api/facility/roster/{vatsim_id}",
             headers=eud_header,
+            timeout=NOTIFICATION_TIMEOUT,
         ).json()["success"]
         tr_entry = RosterEntry(cid=int(vatsim_id))
         tr_entry.save()
