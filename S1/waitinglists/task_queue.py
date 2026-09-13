@@ -1,5 +1,6 @@
 import json
 import os
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -9,6 +10,8 @@ from django.conf import settings
 
 QUEUE_DIR = Path(os.getenv("TASK_QUEUE_DIR", settings.BASE_DIR.parent / "task_queue"))
 PROCESSED_DIR = QUEUE_DIR / "processed"
+STALE_PROCESSING_SECONDS = 30 * 60
+PROCESSED_RETENTION_SECONDS = 7 * 24 * 60 * 60
 
 
 def enqueue(task_name, payload):
@@ -26,7 +29,8 @@ def enqueue(task_name, payload):
 def claim_tasks(limit=100):
     QUEUE_DIR.mkdir(parents=True, exist_ok=True)
     for processing in QUEUE_DIR.glob("*.processing"):
-        os.replace(processing, processing.with_suffix(".json"))
+        if time.time() - processing.stat().st_mtime > STALE_PROCESSING_SECONDS:
+            os.replace(processing, processing.with_suffix(".json"))
 
     claimed = []
     for queued in sorted(QUEUE_DIR.glob("*.json")):
@@ -43,7 +47,10 @@ def claim_tasks(limit=100):
 
 def archive_task(task_file, status, error=None):
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    task = json.loads(task_file.read_text(encoding="utf-8"))
+    try:
+        task = json.loads(task_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        task = {"task": "Invalid task file", "payload": {}, "error": str(exc)}
     task.update(
         {
             "status": status,
@@ -69,6 +76,16 @@ def list_tasks():
     for task_file in PROCESSED_DIR.glob("*.json"):
         tasks.append(_read_task(task_file, None))
     return sorted(tasks, key=lambda task: task["filename"], reverse=True)
+
+
+def purge_old_processed_tasks():
+    cutoff = time.time() - PROCESSED_RETENTION_SECONDS
+    deleted = 0
+    for task_file in PROCESSED_DIR.glob("*.json"):
+        if task_file.stat().st_mtime < cutoff:
+            task_file.unlink()
+            deleted += 1
+    return deleted
 
 
 def _read_task(task_file, default_status):

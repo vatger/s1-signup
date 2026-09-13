@@ -30,10 +30,10 @@ eud_header = {
 NOTIFICATION_TIMEOUT = (3, 10)
 
 
-def _send_notification_request(id: int, title: str, msg: str, link_text: str, link_url: str, via: str) -> any:
+def _send_notification_request(id: int, title: str, message: str, link_text: str, link_url: str, via: str) -> any:
     data = {
         "title": title,
-        "message": msg,
+        "message": message,
         "source_name": "VATGER ATD",
         "link_text": link_text,
         "link_url": link_url,
