@@ -1,0 +1,81 @@
+import json
+import os
+import uuid
+from datetime import datetime, timezone
+from pathlib import Path
+
+from django.conf import settings
+
+
+QUEUE_DIR = Path(os.getenv("TASK_QUEUE_DIR", settings.BASE_DIR.parent / "task_queue"))
+PROCESSED_DIR = QUEUE_DIR / "processed"
+
+
+def enqueue(task_name, payload):
+    QUEUE_DIR.mkdir(parents=True, exist_ok=True)
+    task_id = uuid.uuid4().hex
+    temporary = QUEUE_DIR / f".{task_id}.tmp"
+    queued = QUEUE_DIR / f"{task_id}.json"
+    temporary.write_text(
+        json.dumps({"task": task_name, "payload": payload}),
+        encoding="utf-8",
+    )
+    os.replace(temporary, queued)
+
+
+def claim_tasks(limit=100):
+    QUEUE_DIR.mkdir(parents=True, exist_ok=True)
+    for processing in QUEUE_DIR.glob("*.processing"):
+        os.replace(processing, processing.with_suffix(".json"))
+
+    claimed = []
+    for queued in sorted(QUEUE_DIR.glob("*.json")):
+        processing = queued.with_suffix(".processing")
+        try:
+            os.replace(queued, processing)
+        except FileNotFoundError:
+            continue
+        claimed.append(processing)
+        if len(claimed) >= limit:
+            break
+    return claimed
+
+
+def archive_task(task_file, status, error=None):
+    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+    task = json.loads(task_file.read_text(encoding="utf-8"))
+    task.update(
+        {
+            "status": status,
+            "processed_at": datetime.now(timezone.utc).isoformat(),
+        }
+    )
+    if error:
+        task["error"] = error
+    archived = PROCESSED_DIR / task_file.name.replace(".processing", ".json")
+    temporary = PROCESSED_DIR / f".{archived.stem}.tmp"
+    temporary.write_text(json.dumps(task), encoding="utf-8")
+    os.replace(temporary, archived)
+    task_file.unlink(missing_ok=True)
+
+
+def list_tasks():
+    QUEUE_DIR.mkdir(parents=True, exist_ok=True)
+    tasks = []
+    for task_file in QUEUE_DIR.glob("*.json"):
+        tasks.append(_read_task(task_file, "queued"))
+    for task_file in QUEUE_DIR.glob("*.processing"):
+        tasks.append(_read_task(task_file, "processing"))
+    for task_file in PROCESSED_DIR.glob("*.json"):
+        tasks.append(_read_task(task_file, None))
+    return sorted(tasks, key=lambda task: task["filename"], reverse=True)
+
+
+def _read_task(task_file, default_status):
+    try:
+        task = json.loads(task_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        task = {"task": "Invalid task file", "error": str(exc)}
+    task["filename"] = task_file.name
+    task.setdefault("status", default_status)
+    return task

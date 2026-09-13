@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  &rsaquo; Task queue
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Task queue</h1>
+<p>Queued tasks are waiting to be processed. Processed tasks are retained for auditing.</p>
+<table id="result_list">
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Status</th>
+      <th>Payload</th>
+      <th>Processed at</th>
+      <th>Error</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for task in tasks %}
+    <tr>
+      <td>{{ task.task }}</td>
+      <td>{{ task.status }}</td>
+      <td><pre>{{ task.payload }}</pre></td>
+      <td>{{ task.processed_at|default:"-" }}</td>
+      <td>{{ task.error|default:"-" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No tasks found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

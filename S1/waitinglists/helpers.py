@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 
 from theoryroster.models import RosterEntry
 from .models import Session
+from .task_queue import enqueue
 
 
 load_dotenv()
@@ -26,17 +27,17 @@ eud_header = {
 }
 
 
-def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str, mail: bool = False) -> any:
-    via = "board.ping"
-    if mail:
-        via += ",mail"
+NOTIFICATION_TIMEOUT = (3, 10)
+
+
+def _send_notification_request(id: int, title: str, msg: str, link_text: str, link_url: str, via: str) -> any:
     data = {
         "title": title,
         "message": msg,
         "source_name": "VATGER ATD",
         "link_text": link_text,
         "link_url": link_url,
-        "via": "board.ping",
+        "via": via,
     }
 
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
@@ -44,26 +45,32 @@ def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str,
         f"http://vatsim-germany.org/api/user/{id}/send_notification",
         data=data,
         headers=header,
+        timeout=NOTIFICATION_TIMEOUT,
     )
+    r.raise_for_status()
     return r.json()
 
-def send_mail(id:int, title:str, msg:str, link_text:str, link_url:str) -> any:
-    data = {
-        "title": title,
-        "message": msg,
-        "source_name": "VATGER ATD",
-        "link_text": link_text,
-        "link_url": link_url,
-        "via": "mail",
-    }
-    header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
-    r = requests.post(
-        f"http://vatsim-germany.org/api/user/{id}/send_notification",
-        data=data,
-        headers=header,
-        timeout=10
+def _queue_notification(id: int, title: str, msg: str, link_text: str, link_url: str, via: str) -> None:
+    enqueue(
+        "send_notification",
+        {
+            "id": id,
+            "title": title,
+            "message": msg,
+            "link_text": link_text,
+            "link_url": link_url,
+            "via": via,
+        },
     )
-    return r.json()
+
+
+def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str, mail: bool = False) -> None:
+    via = "board.ping,mail" if mail else "board.ping"
+    _queue_notification(id, title, msg, link_text, link_url, via)
+
+
+def send_mail(id: int, title: str, msg: str, link_text: str, link_url: str) -> None:
+    _queue_notification(id, title, msg, link_text, link_url, "mail")
 
 def generate_signup_confirmation_msg(session: Session, Mail: bool) -> str:
     msg = (
