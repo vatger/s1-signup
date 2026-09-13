@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.contrib.admin.models import LogEntry
+from django import forms
+from django.contrib import messages
 from django.shortcuts import render
-from django.urls import path
+from django.shortcuts import redirect
+from django.urls import path, reverse
 
 
 from .models import (
@@ -15,6 +18,27 @@ from .models import (
     WaitingList,
 )
 from .task_queue import list_tasks
+from .task_queue import enqueue
+
+
+class TestNotificationForm(forms.Form):
+    user_id = forms.CharField(
+        label="VATSIM user ID",
+        max_length=20,
+        help_text="The user's VATSIM CID / username.",
+    )
+    title = forms.CharField(max_length=200, initial="Test notification")
+    message = forms.CharField(widget=forms.Textarea, max_length=5000)
+    via = forms.ChoiceField(
+        choices=(
+            ("mail", "Mail"),
+            ("board.ping", "Forum notification"),
+            ("board.ping,mail", "Forum and mail"),
+        ),
+        initial="mail",
+    )
+    link_text = forms.CharField(max_length=200, required=False, initial="S1 Centre")
+    link_url = forms.URLField(required=False, initial="https://s1.vatger.de")
 
 
 def task_queue_view(request):
@@ -30,6 +54,37 @@ def task_queue_view(request):
     )
 
 
+def test_notification_view(request):
+    if request.method == "POST":
+        form = TestNotificationForm(request.POST)
+        if form.is_valid():
+            enqueue(
+                "send_notification",
+                {
+                    "id": form.cleaned_data["user_id"],
+                    "title": form.cleaned_data["title"],
+                    "message": form.cleaned_data["message"],
+                    "link_text": form.cleaned_data["link_text"],
+                    "link_url": form.cleaned_data["link_url"],
+                    "via": form.cleaned_data["via"],
+                },
+            )
+            messages.success(request, "Test notification queued successfully.")
+            return redirect(reverse("admin:waitinglists_task_queue"))
+    else:
+        form = TestNotificationForm()
+
+    return render(
+        request,
+        "admin/waitinglists/test_notification.html",
+        {
+            **admin.site.each_context(request),
+            "title": "Send test notification",
+            "form": form,
+        },
+    )
+
+
 _original_get_urls = admin.site.get_urls
 
 
@@ -39,6 +94,11 @@ def get_admin_urls():
             "task-queue/",
             admin.site.admin_view(task_queue_view),
             name="waitinglists_task_queue",
+        ),
+        path(
+            "task-queue/test/",
+            admin.site.admin_view(test_notification_view),
+            name="waitinglists_test_notification",
         ),
     ]
     return custom_urls + _original_get_urls()

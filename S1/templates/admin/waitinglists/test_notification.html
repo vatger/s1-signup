@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  &rsaquo; <a href="{% url 'admin:waitinglists_task_queue' %}">Task queue</a>
+  &rsaquo; Send test notification
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Send test notification</h1>
+<p>The notification will be queued and sent by the task processor.</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <div class="submit-row">
+    <input type="submit" value="Queue notification" class="default">
+  </div>
+</form>
+{% endblock %}
