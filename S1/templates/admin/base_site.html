@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">S1 administration</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+<div id="task-queue-link" style="float: right; padding: 10px 20px;">
+  <a href="{% url 'admin:waitinglists_task_queue' %}">Task queue</a>
+</div>
+{% endblock %}

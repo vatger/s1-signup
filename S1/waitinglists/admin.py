@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.contrib.admin.models import LogEntry
+from django.shortcuts import render
+from django.urls import path
 
 
 from .models import (
@@ -12,6 +14,37 @@ from .models import (
     QuizCompletion,
     WaitingList,
 )
+from .task_queue import list_tasks
+
+
+def task_queue_view(request):
+    tasks = list_tasks()
+    return render(
+        request,
+        "admin/waitinglists/task_queue.html",
+        {
+            **admin.site.each_context(request),
+            "title": "Task queue",
+            "tasks": tasks,
+        },
+    )
+
+
+_original_get_urls = admin.site.get_urls
+
+
+def get_admin_urls():
+    custom_urls = [
+        path(
+            "task-queue/",
+            admin.site.admin_view(task_queue_view),
+            name="waitinglists_task_queue",
+        ),
+    ]
+    return custom_urls + _original_get_urls()
+
+
+admin.site.get_urls = get_admin_urls
 
 
 class WaitingListAdmin(admin.ModelAdmin):
