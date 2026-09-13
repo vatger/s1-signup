@@ -61,6 +61,7 @@ def send_mail(id:int, title:str, msg:str, link_text:str, link_url:str) -> any:
         f"http://vatsim-germany.org/api/user/{id}/send_notification",
         data=data,
         headers=header,
+        timeout=10
     )
     return r.json()
 
