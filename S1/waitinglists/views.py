@@ -28,7 +28,6 @@ from .helpers import (
 )
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 from .task_queue import enqueue
-from .management.commands.collect_signups import notify_confirmation
 
 from theoryroster.models import RosterEntry
 
