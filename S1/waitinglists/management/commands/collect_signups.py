@@ -1,45 +1,48 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.db import transaction
 from waitinglists.models import Attendance, Session, Signup
-from waitinglists.helpers import send_forum_msg, send_mail, generate_signup_confirmation_msg
+from waitinglists.helpers import notify_confirmation
+from functools import partial
 
-import os
-from dotenv import load_dotenv
+@transaction.atomic
+def handle_signups(session):
+    now = timezone.now()
+    remaining = session.capacity - Attendance.objects.filter(session=session).count()
+    signups = Signup.objects.filter(session=session).select_related("user").order_by(
+        "waiting_list__date_added", "pk"
+    )
 
-load_dotenv()
+    for signup in signups:
+        if remaining <= 0:
+            break
+        if Attendance.objects.filter(
+            user_id=signup.user_id,
+            session__module_id=session.module_id,
+            session__datetime__gt=now,
+        ).exists():
+            continue
 
-
-def handle_signups(session: Session):
-    try:
-        signups = Signup.objects.filter(session=session).order_by(
-            "waiting_list__date_added"
+        attendance, created = Attendance.objects.get_or_create(
+            user_id=signup.user_id,
+            session=session,
+            defaults={"signup": signup},
         )
-        # Choose signups to capacity
-        signups = signups[: session.capacity]
-        for signup in signups:
-            Attendance.objects.update_or_create(
-                user=signup.user, session=session, signup=signup
-            )
-            send_forum_msg(
-                signup.user.username,
-                "Confirmed Signup",
-                generate_signup_confirmation_msg(session, Mail=False),
-                "S1 Centre",
-                os.getenv("SITE_URL"),
-            )
-            send_mail(
-                signup.user.username,
-                "Confirmed Signup",
-                generate_signup_confirmation_msg(session, Mail=True),
-                "S1 Centre",
-                os.getenv("SITE_URL"),
-            )
-        session.open_signup = True
-        session.save()
+        if not created:
+            continue
 
-    except Session.DoesNotExist:
-        print(f"Session with ID {session.id} does not exist.")
+        Signup.objects.filter(
+            user_id=signup.user_id,
+            session__module_id=session.module_id,
+            session__datetime__gt=now,
+            attendance__isnull=True,
+        ).exclude(session=session).delete()
 
+        remaining -= 1
+        transaction.on_commit(partial(notify_confirmation, signup.user, session))
+
+    session.open_signup = True
+    session.save(update_fields=["open_signup"])
 
 class Command(BaseCommand):
     help = "Daily command to create Attendances from Signups"
@@ -50,7 +53,7 @@ class Command(BaseCommand):
             datetime__gt=timezone.now() + timezone.timedelta(days=1.5),
             datetime__lt=timezone.now() + timezone.timedelta(days=3),
             open_signup=False,
-        )
+        ).order_by("datetime", "pk")
         self.stdout.write(f"Found {len(sessions)} sessions.")
         for session in sessions:
             handle_signups(session)

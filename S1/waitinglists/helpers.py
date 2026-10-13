@@ -63,6 +63,15 @@ def _queue_notification(id: int, title: str, msg: str, link_text: str, link_url:
         },
     )
 
+def notify_confirmation(user, session: Session):
+    for send, mail in ((send_forum_msg, False), (send_mail, True)):
+        send(
+            user.username,
+            "Confirmed Signup",
+            generate_signup_confirmation_msg(session, Mail=mail),
+            "S1 Centre",
+            os.getenv("SITE_URL"),
+        )
 
 def send_forum_msg(id: int, title: str, msg: str, link_text: str, link_url: str, mail: bool = False) -> None:
     via = "board.ping,mail" if mail else "board.ping"
