@@ -2,6 +2,7 @@ import os
 import requests
 from datetime import datetime
 from pathlib import Path
+from functools import partial
 
 from connect.models import UserDetail
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -12,6 +13,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.urls import reverse
 from django.utils import timezone
+from django.db import transaction
 from dotenv import load_dotenv
 
 from theoryroster.models import RosterEntry
@@ -21,10 +23,8 @@ from .helpers import (
     send_moodle_find_user,
     send_moodle_activity_completion,
     quiz_ids,
-    generate_signup_confirmation_msg,
-    send_forum_msg,
-    send_mail,
     can_upgrade,
+    notify_confirmation
 )
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 from .task_queue import enqueue
@@ -372,31 +372,41 @@ def renew_waiting_list(request, module_id):
         pass
     return HttpResponseRedirect(reverse("index"))
 
-
 @login_required
+@transaction.atomic
 def open_signup(request, session_id):
-    session = Session.objects.get(id=session_id)
-    total_attendance = Attendance.objects.filter(session=session).count()
-    if total_attendance < session.capacity and session.open_signup:
-        attendance = Attendance.objects.update_or_create(
-            user=request.user, session=session
-        )
-        send_forum_msg(
-            request.user.username,
-            "Confirmed Signup",
-            generate_signup_confirmation_msg(session, Mail=False),
-            "S1 Centre",
-            os.getenv("SITE_URL"),
-        )
-        send_mail(
-            request.user.username,
-            "Confirmed Signup",
-            generate_signup_confirmation_msg(session, Mail=True),
-            "S1 Centre",
-            os.getenv("SITE_URL"),
+    session = get_object_or_404(Session, id=session_id)
+    now = timezone.now()
+
+    if not session.open_signup or session.datetime <= now:
+        return HttpResponseRedirect(reverse("index"))
+
+    if Attendance.objects.filter(
+        user=request.user,
+        session__module_id=session.module_id,
+        session__datetime__gt=now,
+    ).exists():
+        return HttpResponseRedirect(reverse("index"))
+
+    if Attendance.objects.filter(session=session).count() >= session.capacity:
+        return HttpResponseRedirect(reverse("index"))
+
+    attendance, created = Attendance.objects.get_or_create(
+        user=request.user,
+        session=session,
+    )
+    if created:
+        Signup.objects.filter(
+            user=request.user,
+            session__module_id=session.module_id,
+            session__datetime__gt=now,
+            attendance__isnull=True,
+        ).exclude(session=session).delete()
+
+        transaction.on_commit(
+            partial(notify_confirmation, request.user, session)
         )
     return HttpResponseRedirect(reverse("index"))
-
 
 @login_required
 def cancel_attendance(request, session_id):
