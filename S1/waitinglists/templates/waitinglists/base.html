@@ -173,6 +173,11 @@
     <!-- Main Content -->
     <main class="flex-grow">
         <div class="mx-auto max-w-[1400px] px-5 py-12 sm:px-8 lg:px-12">
+            {% for message in messages %}
+                <div role="status" class="mb-6 rounded-xl border border-warning-200 bg-warning-50 px-4 py-3 text-warning-800 dark:border-warning-800 dark:bg-warning-950 dark:text-warning-200">
+                    {{ message }}
+                </div>
+            {% endfor %}
             {% block content %}{% endblock %}
         </div>
     </main>
