@@ -3,10 +3,11 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from waitinglists.models import Module, QuizCompletion, WaitingList
 from waitinglists.views import module_2_completion
+import requests
 
 
 class Command(BaseCommand):
-    help = "Weekly command to check whether module 2 quizzes have not been completed"
+    help = "Command to check whether module 2 quizzes have not been completed. Runs every other day(ish)."
 
     def handle(self, *args, **kwargs):
         result = []
@@ -16,7 +17,11 @@ class Command(BaseCommand):
         mod4 = Module.objects.get(name="Module 4")
 
         mod_1_users = set(
-            WaitingList.objects.filter(module=mod1, completed=True).values_list(
+            WaitingList.objects.filter(
+                module=mod1,
+                completed=True,
+                user__userdetail__flagged_for_deletion=False,
+            ).values_list(
                 "user__username", flat=True
             )
         )
@@ -35,31 +40,28 @@ class Command(BaseCommand):
             module_1_completion_date = WaitingList.objects.get(
                 module=mod1, user__username=user
             ).date_completed
-            if timezone.now() - module_1_completion_date < timezone.timedelta(days=40):
+            if module_1_completion_date is None:
+                self.stderr.write(f"module_cleanup: Skipping {user}: Module 1 completion date is missing.")
                 continue
-            module_2_completion(User.objects.get(username=user), fetch=True)
+            if timezone.now() - module_1_completion_date <= timezone.timedelta(days=31):
+                continue
+            try:
+                _, completed = module_2_completion(User.objects.get(username=user), fetch=True)
+            except (requests.RequestException, ValueError, KeyError, TypeError) as exc:
+                self.stderr.write(f"module_cleanup:: Skipping {user}: Moodle check failed ({exc}).")
+                continue
+            if completed:
+                continue
             completions = list(
                 QuizCompletion.objects.filter(user__username=user).order_by(
                     "date_completed"
                 )
             )
-            match len(completions):
-                case 0:
-                    # If time since completion of Module 1 is greater than 40 days, save user to result
-                    if (timezone.now() - module_1_completion_date).days > 40:
-                        result.append(user)
-                case 1:
-                    # If difference between completion of Module 1 and the only quiz completion is greater than 40 days, save user to result
-                    if (
-                        completions[0].date_completed - module_1_completion_date
-                    ).days > 40:
-                        result.append(user)
-                case _:
-                    # If difference between last two quiz completions is greater than 40 days, save user to result
-                    if (
-                        completions[-1].date_completed - completions[-2].date_completed
-                    ).days > 40:
-                        result.append(user)
+            last_progress = module_1_completion_date
+            if completions:
+                last_progress = max(last_progress, completions[-1].date_completed)
+            if timezone.now() - last_progress > timezone.timedelta(days=31):
+                result.append(user)
         for user in result:
             obj = User.objects.get(username=user)
             obj.userdetail.flagged_for_deletion = True

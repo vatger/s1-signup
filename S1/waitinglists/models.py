@@ -19,6 +19,11 @@ class WaitingList(models.Model):
     expiry_date = models.DateTimeField(null=True, blank=True)
     date_completed = models.DateTimeField(null=True, blank=True)
 
+    def clean(self):
+        super().clean()
+        if self.completed and self.date_completed is None:
+            self.date_completed = now()
+
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - {self.module}"
 
