@@ -9,7 +9,7 @@
     <!-- Header / Navigation -->
     <div class="flex items-center justify-between gap-4 mb-2">
         <h1 class="font-semibold text-3xl sm:text-4xl text-primary-900 dark:text-white tracking-[-0.02em]">
-            Training Progress
+            Training Progress: {{ user.get_full_name }} ({{ user.username }})
         </h1>
         <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-sm font-semibold text-secondary-800 dark:text-secondary-300 hover:text-accent dark:hover:text-accent transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m15 18-6-6 6-6"></path></svg>
@@ -157,6 +157,26 @@
         </div>
         {% endif %}
 
+        {% if request.user.is_superuser %}
+        <!-- Training Reset Panel -->
+        <div class="lg:col-span-2 bg-white dark:bg-secondary-900 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm transition-colors duration-200">
+            <div class="p-6 border-b border-secondary-200 dark:border-secondary-800">
+                <h3 class="text-xl font-semibold text-primary-900 dark:text-white tracking-[-0.02em]">Reset Training</h3>
+            </div>
+            <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="space-y-2 text-sm text-secondary-800 dark:text-secondary-400">
+                    <p>Complete the Moodle removal and results cleanup first.</p>
+                </div>
+                <form method="post" action="{% url 'reset_training' user.username %}"
+                      onsubmit="return confirm('Reset this user\'s training? This deletes local quiz completions, waiting-list entries and their linked signups and attendance records.');">
+                    {% csrf_token %}
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold text-danger-700 dark:text-danger-400 border border-danger-200 dark:border-danger-900 hover:bg-danger-50 dark:hover:bg-danger-900/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
+                        Reset Training
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
