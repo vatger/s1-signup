@@ -8,6 +8,7 @@ from connect.models import UserDetail
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
@@ -15,6 +16,7 @@ from django.template import loader
 from django.urls import reverse
 from django.utils import timezone
 from django.db import transaction
+from django.views.decorators.http import require_POST
 from dotenv import load_dotenv
 
 from theoryroster.models import RosterEntry
@@ -462,11 +464,14 @@ def management(request):
     return HttpResponse(template.render(context, request))
 
 
-@user_passes_test(is_mentor)
+@user_passes_test(lambda user: user.is_superuser or is_mentor(user))
 def user_detail(request, user_id):
     user = User.objects.get(username=user_id)
+    module_1_completed = WaitingList.objects.filter(
+        user=user, module__name="Module 1", completed=True
+    ).exists()
     try:
-        mod2_quizzes, _ = module_2_completion(user, fetch=True)
+        mod2_quizzes, _ = module_2_completion(user, fetch=module_1_completed)
     except (requests.RequestException, ValueError, KeyError, TypeError):
         messages.warning(
             request,
@@ -554,3 +559,21 @@ def upgrade(request):
 
     enqueue("upgrade_user", {"vatsim_id": int(user.username)})
     return HttpResponseRedirect(reverse("index"))
+
+@login_required
+@require_POST
+@transaction.atomic
+def reset_training(request, user_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    detail = get_object_or_404(
+        UserDetail.objects.select_for_update(), user__username=user_id
+    )
+    QuizCompletion.objects.filter(user=detail.user).delete()
+    WaitingList.objects.filter(user=detail.user).delete()
+    detail.flagged_for_deletion = False
+    detail.save(update_fields=["flagged_for_deletion"])
+
+    messages.success(request, "Training reset.")
+    return redirect("user_details", user_id=user_id)
