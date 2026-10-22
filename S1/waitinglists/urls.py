@@ -28,6 +28,7 @@ urlpatterns = [
     ),
     path("update_module", views.update_module_2, name="update_module"),
     path("<int:user_id>/details", views.user_detail, name="user_details"),
+    path("<int:user_id>/reset_training", views.reset_training, name="reset_training"),
     path(
         "<int:user_id>/remove_from_roster",
         views.remove_from_roster,
