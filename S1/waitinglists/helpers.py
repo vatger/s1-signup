@@ -162,14 +162,16 @@ def send_moodle_activity_completion(
 ) -> tuple[bool, float]:
 
     header = {"Authorization": f"Token {os.getenv("VATGER_API_KEY")}"}
-    r = requests.get(
+    response = requests.get(
         f"http://vatsim-germany.org/api/moodle/activity/{course_module_id}/user/{user_id}/completion",
         headers=header,
-    ).json()
-    try:
-        return r["isoverallcomplete"], r["timecompleted"]
-    except:
-        return False, 0
+        timeout=NOTIFICATION_TIMEOUT,
+    )
+    response.raise_for_status()
+    r = response.json()
+    if not isinstance(r["isoverallcomplete"], bool):
+        raise ValueError("Invalid Moodle completion status")
+    return r["isoverallcomplete"], r["timecompleted"]
 
 
 def send_moodle_enrol_user(user_id: int, course_id: int) -> bool:

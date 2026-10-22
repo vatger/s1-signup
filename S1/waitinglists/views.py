@@ -5,6 +5,7 @@ from pathlib import Path
 from functools import partial
 
 from connect.models import UserDetail
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.forms import modelformset_factory
@@ -122,7 +123,14 @@ def check_modules(user):
 
 @login_required
 def update_module_2(request):
-    module_2_completion(request.user, fetch=True)
+    try:
+        module_2_completion(request.user, fetch=True)
+    except (requests.RequestException, ValueError, KeyError, TypeError):
+        messages.warning(
+            request,
+            "Quiz results could not be refreshed. Showing locally stored results; "
+            "please try again later.",
+        )
     return HttpResponseRedirect(reverse("index"))
 
 
@@ -457,7 +465,15 @@ def management(request):
 @user_passes_test(is_mentor)
 def user_detail(request, user_id):
     user = User.objects.get(username=user_id)
-    mod2_quizzes, _ = module_2_completion(user, fetch=True)
+    try:
+        mod2_quizzes, _ = module_2_completion(user, fetch=True)
+    except (requests.RequestException, ValueError, KeyError, TypeError):
+        messages.warning(
+            request,
+            "Quiz results could not be refreshed. Showing locally stored results; "
+            "please try again later.",
+        )
+        mod2_quizzes, _ = module_2_completion(user, fetch=False)
     module_list = Module.objects.all().order_by("name")
     modules_completed = []
     for module in module_list:

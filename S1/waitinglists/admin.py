@@ -152,6 +152,9 @@ class SessionAdmin(admin.ModelAdmin):
                 )  # No group found, no users displayed
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+class QuizCompletionAdmin(admin.ModelAdmin):
+    search_fields = ("user__username__startswith",)
+    search_help_text = "Search by CID."
 
 @admin.register(LogEntry)
 class LogEntryAdmin(admin.ModelAdmin):
@@ -175,5 +178,5 @@ admin.site.register(Comment)
 admin.site.register(Module)
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Signup)
-admin.site.register(QuizCompletion)
+admin.site.register(QuizCompletion, QuizCompletionAdmin)
 admin.site.register(WaitingList, WaitingListAdmin)
