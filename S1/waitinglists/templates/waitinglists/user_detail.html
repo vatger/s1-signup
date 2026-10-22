@@ -100,7 +100,7 @@
                         <div class="flex h-6 w-6 items-center justify-center rounded-full bg-secondary-200 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300">
                             {{ comment.author.first_name|first }}{{ comment.author.last_name|first }}
                         </div>
-                        {{ comment.author.first_name }} {{ comment.author.last_name }}
+                        {{ comment.author.first_name }} {{ comment.author.last_name }} - {{ comment.date_added|date:"d.m.Y" }}
                     </div>
                 </div>
                 {% empty %}
