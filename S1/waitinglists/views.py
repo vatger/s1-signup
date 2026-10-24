@@ -583,7 +583,7 @@ def reset_training(request, user_id):
         detail.user,
         CHANGE,
         f"Training reset for {detail.user.get_full_name()} ({detail.user.username}) "
-        f"by {request.user.get_full_name()} ({request.user.username}). ",
+        f"by {request.user.get_full_name()} ({request.user.username}).",
     )
 
     messages.success(request, "Training reset.")
