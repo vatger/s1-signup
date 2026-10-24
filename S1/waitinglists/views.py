@@ -8,6 +8,7 @@ from connect.models import UserDetail
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from django.contrib.admin.models import CHANGE
 from django.core.exceptions import PermissionDenied
 from django.forms import modelformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
@@ -21,13 +22,15 @@ from dotenv import load_dotenv
 
 from theoryroster.models import RosterEntry
 
+from S1.helpers import log_admin_action
+
 from .forms import AttendanceForm, CommentForm, UserDetailForm
 from .helpers import (
     send_moodle_find_user,
     send_moodle_activity_completion,
     quiz_ids,
     can_upgrade,
-    notify_confirmation
+    notify_confirmation,
 )
 from .models import Attendance, Session, WaitingList, Module, Signup, QuizCompletion
 from .task_queue import enqueue
@@ -574,6 +577,14 @@ def reset_training(request, user_id):
     WaitingList.objects.filter(user=detail.user).delete()
     detail.flagged_for_deletion = False
     detail.save(update_fields=["flagged_for_deletion"])
+
+    log_admin_action(
+        request.user,
+        detail.user,
+        CHANGE,
+        f"Training reset for {detail.user.get_full_name()} ({detail.user.username}) "
+        f"by {request.user.get_full_name()} ({request.user.username}).",
+    )
 
     messages.success(request, "Training reset.")
     return redirect("user_details", user_id=user_id)
