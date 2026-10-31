@@ -113,6 +113,12 @@ def check_modules(user):
         mod4 = Module.objects.get(name="Module 4")
         wait3 = WaitingList.objects.get(user=user, module=mod3)
         wait4 = WaitingList.objects.get(user=user, module=mod4)
+        if WaitingList.objects.filter(
+            user=user,
+            module__name="Module 5",
+            completed=True,
+        ).exists():
+            return
         if wait3.completed and wait4.completed:
             enqueue(
                 "assign_training_exam",
@@ -313,6 +319,8 @@ def update_attendance(request, session_id):
                         waiting_list_entry = WaitingList.objects.get(
                             user=attendance.user, module=session.module
                         )
+                        if waiting_list_entry.completed:
+                            continue
                         waiting_list_entry.completed = True
                         waiting_list_entry.date_completed = timezone.now()
                         waiting_list_entry.save()
