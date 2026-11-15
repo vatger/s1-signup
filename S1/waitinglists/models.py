@@ -40,6 +40,8 @@ class Session(models.Model):
         EDSB = "EDSB", "Karlsruhe/Baden-Baden (EDSB)"
         EDDN = "EDDN", "Nürnberg (EDDN)"
 
+    RETIRED_AIRPORTS = frozenset({Airport.EDDG, Airport.EDDN})
+
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
     capacity = models.IntegerField()
