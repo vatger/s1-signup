@@ -1,6 +1,29 @@
 from django import forms
-from .models import Attendance, Comment
+from .models import Attendance, Comment, Session
 from django.forms import modelformset_factory
+
+class SessionAdminForm(forms.ModelForm):
+    class Meta:
+        model = Session
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        airport_field = self.fields.get("airport")
+        if airport_field is None:
+            return
+
+        current_airport = (
+            self.instance.airport if not self.instance._state.adding else None
+        )
+        airport_field.choices = [
+            (
+                value,
+                f"{label} (retired)" if value in Session.RETIRED_AIRPORTS else label,
+            )
+            for value, label in airport_field.choices
+            if value not in Session.RETIRED_AIRPORTS or value == current_airport
+        ]
 
 
 class AttendanceForm(forms.ModelForm):

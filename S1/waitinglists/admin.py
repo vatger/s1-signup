@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import path, reverse
 
+from .forms import SessionAdminForm
 
 from .models import (
     Attendance,
@@ -135,6 +136,8 @@ class WaitingListAdmin(admin.ModelAdmin):
 
 
 class SessionAdmin(admin.ModelAdmin):
+    form = SessionAdminForm
+
     def get_readonly_fields(self, request, obj=None):
         if request.user.groups.filter(name="Mentor").exists():
             return ("open_signup",)  # "attendance_done",
