@@ -59,7 +59,10 @@ def callback_view(request):
         )
         user.first_name = profile["firstname"]
         user.last_name = profile["lastname"]
-        user.is_staff = "S1 Mentor" in profile["teams"] or "ATD Leitung" in profile["teams"]
+        user.is_staff = (
+            any(team in profile["teams"] for team in ("S1 Mentor", "ATD Leitung"))
+            or user.groups.filter(name="Chief of Training").exists()
+        )
         user.save()
 
         if "S1 Mentor" in profile["teams"] or "ATD Leitung" in profile["teams"]:
